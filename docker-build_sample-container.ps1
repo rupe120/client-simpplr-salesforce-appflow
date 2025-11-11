@@ -1,1 +1,0 @@
-docker build -t sample-container src-backend/sample-container
