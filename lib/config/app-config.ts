@@ -27,16 +27,6 @@ export const appConfig: AppConfig = {
           protectedCidrMask: 24,
         },
       },
-      cloudFront: {
-        domainName: 'dev.example.com',
-      },
-      cognito: {
-        googleOAuth: {
-          clientId: 'YOUR_GOOGLE_CLIENT_ID', // Replace with your Google OAuth client ID
-          clientSecret: 'YOUR_GOOGLE_CLIENT_SECRET', // Replace with your Google OAuth client secret
-          scopes: ['openid', 'email', 'profile'],
-        },
-      },
     }
   ]
 };
@@ -69,16 +59,6 @@ export class EnvironmentConfig {
             publicCidrMask: number;
             privateCidrMask: number;
             protectedCidrMask: number;
-        };
-    };
-    public cloudFront: {
-        domainName: string;
-    };
-    public cognito?: {
-        googleOAuth: {
-            clientId: string;
-            clientSecret: string;
-            scopes: string[];
         };
     };
 }
