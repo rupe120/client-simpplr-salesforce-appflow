@@ -5,7 +5,7 @@ export const appConfig: AppConfig = {
   pipeline: {
     account: '971764590821',
     region: 'us-east-1',
-    repositoryName: 'simpplr-salesforce-appflow',
+    repositoryName: 'client-simpplr-salesforce-appflow',
     repositoryOwner: 'protagona',
     branch: 'main',
     connectionArn: 'arn:aws:codeconnections:us-east-1:971764590821:connection/b620b065-7ffc-465b-b479-2d641abb4d44',
