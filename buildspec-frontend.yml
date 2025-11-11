@@ -1,0 +1,26 @@
+version: 0.2
+
+phases:
+  pre_build:
+    commands:
+      - echo Logging in to Amazon ECR...
+      - cd src-frontend
+      - echo Installing dependencies...
+      - npm ci
+  build:
+    commands:
+      - echo Build started on `date`
+      - echo Building React application...
+      - npm run build
+      - echo Build completed on `date`
+  post_build:
+    commands:
+      - echo Build completed on `date`
+      - echo Uploading to S3...
+      - aws s3 sync build/ s3://$S3_HOSTING_BUCKET --delete
+      - echo Upload completed on `date`
+
+artifacts:
+  files:
+    - '**/*'
+  base-directory: 'src-frontend/build'

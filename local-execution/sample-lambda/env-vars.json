@@ -1,0 +1,10 @@
+{
+    "Parameters": {
+        "ACCOUNT_ID": "533101977259",
+        "COGNITO_USER_POOL_ID": "us-east-1_DUcNDQniU",
+        "COGNITO_IDENTITY_POOL_ID": "us-east-1:625d469e-27fd-4bf2-8997-75fb3773a02c",
+        "COGNITO_USER_POOL_CLIENT_ID": "1cpsh9nsu1mk651o6v7s06t5fj",
+        "COGNITO_REGION": "us-east-1",
+        "COGNITO_DOMAIN": "dev.example.com"
+    }
+}
