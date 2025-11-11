@@ -1,10 +1,8 @@
 import * as cdk from 'aws-cdk-lib';
 import * as ec2 from 'aws-cdk-lib/aws-ec2';
-import * as kms from 'aws-cdk-lib/aws-kms';
 import { Construct } from 'constructs';
 import { AppConfig, EnvironmentConfig } from './config/app-config';
 import * as ecs from 'aws-cdk-lib/aws-ecs';
-// import * as sqs from 'aws-cdk-lib/aws-sqs';
 
 export interface ApplicationCoreStackProps extends cdk.StackProps {
   appConfig: AppConfig;
@@ -13,7 +11,6 @@ export interface ApplicationCoreStackProps extends cdk.StackProps {
 
 export class ApplicationCoreStack extends cdk.Stack {
   public readonly vpc: ec2.Vpc;
-  public readonly ecsCluster: ecs.Cluster;
   
   constructor(scope: Construct, id: string, props: ApplicationCoreStackProps) {
     super(scope, id, props);
@@ -45,11 +42,6 @@ export class ApplicationCoreStack extends cdk.Stack {
     // Store VPC information for export
     this.vpc = vpc;
 
-    // Create ECS cluster
-    this.ecsCluster = new ecs.Cluster(this, 'EcsCluster', {
-      clusterName: `${props.appConfig.name}-ecs-cluster-${props.envConfig.name}`,
-      vpc: this.vpc,
-    });
 
   }
 }
