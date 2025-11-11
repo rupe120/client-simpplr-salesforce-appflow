@@ -1,8 +1,8 @@
 {
-  "name": "cdk-init-starter",
+  "name": "simpplr-salesforce-appflow",
   "version": "0.1.0",
   "bin": {
-    "cdk-init-starter": "bin/cdk-init-starter.js"
+    "simpplr-salesforce-appflow": "bin/simpplr-salesforce-appflow.js"
   },
   "scripts": {
     "build": "tsc",

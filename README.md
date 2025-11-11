@@ -1,4 +1,4 @@
-# CDK Init Starter
+# Simpplr Salesforce Appflow
 
 A comprehensive AWS CDK TypeScript project that demonstrates a full-stack application architecture with CI/CD pipeline, authentication, and multi-environment deployment capabilities.
 
@@ -18,9 +18,9 @@ This project provides a production-ready foundation for building scalable web ap
 ## Folder Structure
 
 ```
-cdk-init-starter/
+simpplr-salesforce-appflow/
 ├── bin/                                    # CDK app entry point
-│   └── cdk-init-starter.ts                # Main CDK app configuration
+│   └── simpplr-salesforce-appflow.ts                # Main CDK app configuration
 ├── lib/                                    # CDK stack definitions
 │   ├── application-core-stack.ts          # Core infrastructure (VPC, ECS cluster, KMS keys)
 │   ├── application-storage-stack.ts       # Storage resources (S3, DynamoDB, Cognito)
@@ -47,7 +47,7 @@ cdk-init-starter/
 │   ├── package.json
 │   └── tsconfig.json
 ├── test/                                  # CDK unit tests
-│   └── cdk-init-starter.test.ts
+│   └── simpplr-salesforce-appflow.test.ts
 ├── buildspec-frontend.yml                # CodeBuild spec for frontend
 ├── cdk.json                              # CDK configuration
 ├── package.json                          # Node.js dependencies
@@ -166,12 +166,12 @@ The trust configuration enables the pipeline account to deploy resources in envi
 
 3. **Deploy the pipeline**:
    ```bash
-   npx cdk deploy CdkInitStarterPipelineStack
+   npx cdk deploy SimpplrSalesforceAppflowPipelineStack
    ```
 
 4. **Deploy to specific environment**:
    ```bash
-   npx cdk deploy --app "npx ts-node bin/cdk-init-starter.ts" <stack-name>
+   npx cdk deploy --app "npx ts-node bin/simpplr-salesforce-appflow.ts" <stack-name>
    ```
 
 ## Local Development & Testing

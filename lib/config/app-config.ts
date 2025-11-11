@@ -1,11 +1,11 @@
 export const appConfig: AppConfig = {
-  name: 'cdk-init-starter',
+  name: 'simpplr-salesforce-appflow',
   version: '0.1.0',
 
   pipeline: {
     account: '971764590821',
     region: 'us-east-1',
-    repositoryName: 'cdk-init-starter',
+    repositoryName: 'simpplr-salesforce-appflow',
     repositoryOwner: 'protagona',
     branch: 'main',
     connectionArn: 'arn:aws:codeconnections:us-east-1:971764590821:connection/b620b065-7ffc-465b-b479-2d641abb4d44',
