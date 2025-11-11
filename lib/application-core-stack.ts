@@ -10,38 +10,31 @@ export interface ApplicationCoreStackProps extends cdk.StackProps {
 }
 
 export class ApplicationCoreStack extends cdk.Stack {
-  public readonly vpc: ec2.Vpc;
-  
+  public readonly vpc: ec2.IVpc;
+
   constructor(scope: Construct, id: string, props: ApplicationCoreStackProps) {
     super(scope, id, props);
-    // Create VPC with 3 availability zones
-    const vpc = new ec2.Vpc(this, 'MainVpc', {
-      vpcName: `${props.appConfig.name}-vpc-${props.envConfig.name}`,
-      ipAddresses: ec2.IpAddresses.cidr(props.envConfig.vpc.cidr),
-      maxAzs: props.envConfig.vpc.maxAzs,
-      natGateways: props.envConfig.vpc.natGateways, 
-      subnetConfiguration: [
-        {
-          cidrMask: props.envConfig.vpc.subnets.publicCidrMask,
-          name: 'Public',
-          subnetType: ec2.SubnetType.PUBLIC,
-        },
-        {
-          cidrMask: props.envConfig.vpc.subnets.privateCidrMask,
-          name: 'Private',
-          subnetType: ec2.SubnetType.PRIVATE_WITH_EGRESS,
-        },
-        {
-          cidrMask: props.envConfig.vpc.subnets.protectedCidrMask,
-          name: 'Protected',
-          subnetType: ec2.SubnetType.PRIVATE_ISOLATED,
-        },
-      ],
+
+    // Lookup existing VPC by ID
+    // This VPC should contain the external RDS instances
+    const vpc = ec2.Vpc.fromLookup(this, 'ExistingVpc', {
+      vpcId: props.envConfig.vpcId,
     });
 
     // Store VPC information for export
     this.vpc = vpc;
 
+    // Output VPC information for reference
+    new cdk.CfnOutput(this, 'VpcId', {
+      value: vpc.vpcId,
+      description: 'VPC ID where resources are deployed',
+      exportName: `${props.appConfig.name}-vpc-id-${props.envConfig.name}`,
+    });
 
+    new cdk.CfnOutput(this, 'VpcPrivateSubnets', {
+      value: vpc.privateSubnets.map(subnet => subnet.subnetId).join(','),
+      description: 'Private subnet IDs',
+      exportName: `${props.appConfig.name}-private-subnets-${props.envConfig.name}`,
+    });
   }
 }

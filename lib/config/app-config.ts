@@ -78,16 +78,8 @@ export const appConfig: AppConfig = {
       account: '533101977259',
       region: 'us-east-1',
       requiresApproval: false,
-      vpc: {
-        cidr: '10.10.0.0/16',
-        maxAzs: 3,
-        natGateways: 1, // Single NAT Gateway for cost optimization
-        subnets: {
-          publicCidrMask: 24,
-          privateCidrMask: 24,
-          protectedCidrMask: 24,
-        },
-      },
+      // Reference to existing VPC that contains the RDS instances
+      vpcId: 'vpc-xxxxxxxxxxxxxxxxx', // Update with actual VPC ID where RDS instances are located
     }
   ]
 };
@@ -116,16 +108,7 @@ export class EnvironmentConfig {
     public account: string;
     public region: string;
     public requiresApproval: boolean;
-    public vpc: {
-        cidr: string;
-        maxAzs: number;
-        natGateways: number;
-        subnets: {
-            publicCidrMask: number;
-            privateCidrMask: number;
-            protectedCidrMask: number;
-        };
-    };
+    public vpcId: string; // ID of existing VPC that contains RDS instances
 }
 
 export interface CustomerConfig {

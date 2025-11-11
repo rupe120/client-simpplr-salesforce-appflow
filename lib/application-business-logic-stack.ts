@@ -6,6 +6,8 @@ import * as ec2 from 'aws-cdk-lib/aws-ec2';
 import * as appflow from 'aws-cdk-lib/aws-appflow';
 import * as iam from 'aws-cdk-lib/aws-iam';
 import * as secretsmanager from 'aws-cdk-lib/aws-secretsmanager';
+import * as cr from 'aws-cdk-lib/custom-resources';
+import * as logs from 'aws-cdk-lib/aws-logs';
 import { AppConfig, EnvironmentConfig } from './config/app-config';
 import { ApplicationCoreStack } from './application-core-stack';
 import { ApplicationStorageStack } from './application-storage-stack';
@@ -54,6 +56,35 @@ export class ApplicationBusinessLogicStack extends cdk.Stack {
       description: 'Service role for AppFlow to access Salesforce and invoke Lambda functions',
     });
 
+    // Create RDS database initialization Lambda
+    // This Lambda creates databases in external RDS instances for each customer
+    const rdsDbInitSecurityGroup = new ec2.SecurityGroup(this, 'RdsDbInitSecurityGroup', {
+      vpc: props.coreStack.vpc,
+      description: `${props.appConfig.name}-rds-db-init-sg-${props.envConfig.name}`,
+      allowAllOutbound: true,
+    });
+
+    const rdsDbInitLambda = new lambda.Function(this, 'RdsDbInitLambda', {
+      functionName: `${props.appConfig.name}-rds-db-init-${props.envConfig.name}`,
+      runtime: lambda.Runtime.PYTHON_3_12,
+      handler: 'index.handler',
+      code: lambda.Code.fromAsset('src-backend/rds-database-init'),
+      timeout: cdk.Duration.minutes(5),
+      vpc: props.coreStack.vpc,
+      vpcSubnets: {
+        subnets: props.coreStack.vpc.privateSubnets,
+      },
+      securityGroups: [rdsDbInitSecurityGroup],
+      description: 'Custom resource Lambda to initialize RDS databases for customers',
+      logRetention: logs.RetentionDays.ONE_WEEK,
+    });
+
+    // Create custom resource provider
+    const rdsDbInitProvider = new cr.Provider(this, 'RdsDbInitProvider', {
+      onEventHandler: rdsDbInitLambda,
+      logRetention: logs.RetentionDays.ONE_WEEK,
+    });
+
     // Create AppFlow resources for each customer
     props.appConfig.customers.forEach((customer) => {
       // Create transformation Lambda for this customer
@@ -80,6 +111,24 @@ export class ApplicationBusinessLogicStack extends cdk.Stack {
         customer.rdsConfig.secretArn
       );
       rdsSecret.grantRead(transformLambda);
+
+      // Grant RDS init Lambda access to the secret
+      rdsSecret.grantRead(rdsDbInitLambda);
+
+      // Create custom resource to initialize the database
+      const dbInitCustomResource = new cdk.CustomResource(this, `DbInit-${customer.customerId}`, {
+        serviceToken: rdsDbInitProvider.serviceToken,
+        properties: {
+          RdsHost: customer.rdsConfig.host,
+          RdsPort: customer.rdsConfig.port,
+          DatabaseName: customer.rdsConfig.database,
+          SecretArn: customer.rdsConfig.secretArn,
+          Engine: customer.rdsConfig.engine,
+          // Add a unique identifier to force updates when config changes
+          CustomerId: customer.customerId,
+          Timestamp: Date.now().toString(),
+        },
+      });
 
       // Create AppFlow connector profile for Salesforce (one per customer)
       const salesforceConnectorProfile = new appflow.CfnConnectorProfile(this, `SalesforceConnector-${customer.customerId}`, {
@@ -216,9 +265,10 @@ export class ApplicationBusinessLogicStack extends cdk.Stack {
           tasks: fieldMappingTasks,
         });
 
-        // Add dependency on connector profiles
+        // Add dependency on connector profiles and database initialization
         flow.addDependency(salesforceConnectorProfile);
         flow.addDependency(rdsConnectorProfile);
+        flow.node.addDependency(dbInitCustomResource);
 
         // Tag the flow
         cdk.Tags.of(flow).add('Customer', customer.name);
