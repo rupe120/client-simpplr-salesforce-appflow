@@ -1,9 +1,10 @@
 import * as cdk from 'aws-cdk-lib';
 import { Construct } from 'constructs';
-import { ApplicationBusinessLogicStack } from './application-business-logic-stack';
 import { AppConfig, EnvironmentConfig } from './config/app-config';
 import { ApplicationCoreStack } from './application-core-stack';
-import { ApplicationStorageStack } from './application-storage-stack';
+import { MigrationStorageStack } from './migration-storage-stack';
+import { MigrationBusinessLogicStack } from './migration-business-logic-stack';
+import { migrationConfig } from './config/migration-config';
 
 export interface PipelineAppStageProps extends cdk.StageProps {
   appConfig: AppConfig;
@@ -15,31 +16,27 @@ export class PipelineAppStage extends cdk.Stage {
   constructor(scope: Construct, id: string, props: PipelineAppStageProps) {
     super(scope, id, props);
 
-    // Deploy the main application stack
-
+    // Core infrastructure stack (VPC)
     const coreStack = new ApplicationCoreStack(this, 'ApplicationCoreStack', {
-      stackName: `${props.appConfig.name}-application-core-stack`,
       appConfig: props.appConfig,
       envConfig: props.envConfig,
-      env: props.env,
     });
 
-    const storageStack = new ApplicationStorageStack(this, 'ApplicationStorageStack', {
-      stackName: `${props.appConfig.name}-application-storage-stack`,
+    // Unified storage stack (combines application and migration storage)
+    const storageStack = new MigrationStorageStack(this, 'MigrationStorageStack', {
       appConfig: props.appConfig,
       envConfig: props.envConfig,
-      env: props.env,
+      migrationConfig: migrationConfig,
       coreStack: coreStack,
     });
-    
-    new ApplicationBusinessLogicStack(this, 'ApplicationBusinessLogicStack', {
-      stackName: `${props.appConfig.name}-application-business-logic-stack`,
+
+    // Unified business logic stack (combines application and migration logic)
+    new MigrationBusinessLogicStack(this, 'MigrationBusinessLogicStack', {
       appConfig: props.appConfig,
       envConfig: props.envConfig,
-      env: props.env,
+      migrationConfig: migrationConfig,
       coreStack: coreStack,
       storageStack: storageStack,
     });
-
   }
 }

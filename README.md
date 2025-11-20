@@ -64,34 +64,41 @@ simpplr-salesforce-appflow/
 - **ECS Cluster** for containerized applications
 - **KMS Keys** for S3 and DynamoDB encryption
 
-### Storage & Authentication (`ApplicationStorageStack`)
-- **S3 Buckets**
+### Storage & Authentication (`MigrationStorageStack`)
+- **Application S3 Buckets**
   - Application data bucket with KMS encryption
   - Static website hosting bucket
-- **DynamoDB Table** with customer-managed encryption
+- **Migration S3 Buckets**
+  - Raw data bucket (AppFlow output)
+  - Processed data bucket (Glue job results)
+  - Error data bucket (failed records)
+  - Scripts bucket (Glue job scripts)
+  - Temp bucket (temporary processing data)
+  - Logs bucket (Spark/Glue logs)
+- **DynamoDB Tables**
+  - Application table with customer-managed encryption
+  - Entity Migration Status (EMS) table
+  - Tenant Migration Status (TMS) table
 - **AWS Cognito**
   - User Pool for authentication
   - Identity Pool for AWS resource access
   - User Pool Client with OAuth support
   - IAM roles for authenticated/unauthenticated users
-- **CloudFront Distribution** for static website delivery
 - **SQS Queues**
   - Main queue for S3 event processing
   - Dead letter queue for failed messages
 - **CloudWatch Log Groups** for Lambda and ECS logging
 
-### Application Services (`ApplicationBusinessLogicStack`)
-- **Lambda Function**
-  - Python 3.12 runtime
-  - Triggered by S3 events via SQS
-  - VPC-enabled with security groups
-  - Access to S3 and DynamoDB
-- **ECS Fargate Service**
-  - Application Load Balancer
-  - Containerized Python application
-  - Health checks on `/health` endpoint
-  - VPC-enabled with security groups
-  - Access to S3 and DynamoDB
+### Application & Migration Services (`MigrationBusinessLogicStack`)
+- **Application Services**
+  - **Lambda Function** - Python 3.12 runtime, triggered by S3 events via SQS
+  - **AppFlow Flows** - Regular sync flows from Salesforce to RDS per customer
+  - **RDS Database Initialization** - Custom resource Lambda for database setup
+- **Migration Services**
+  - **Migration AppFlow Flows** - Extract data from Salesforce to S3 for migration
+  - **Glue ETL Jobs** - Transform data from S3 to Zeus DB (200+ jobs)
+  - **Step Functions State Machine** - Orchestrate migration execution
+  - **CloudWatch Monitoring** - Dashboards and alerts for migration
 
 ### CI/CD Pipeline (`PipelineStack`)
 - **AWS CodePipeline** with GitHub integration
@@ -239,6 +246,78 @@ Run the sample container application locally:
 - Empty JSON object `{}` for basic Lambda invocation
 - Modify to simulate specific event types (S3, SQS, etc.)
 
+## Migration Stacks
+
+This project includes comprehensive migration infrastructure for migrating data from Odin (Salesforce) to Zeus (PostgreSQL/MongoDB) using AWS Glue, AppFlow, and Step Functions.
+
+### Migration Stack Components
+
+1. **MigrationStorageStack** - S3 buckets and DynamoDB tables
+   - Raw data bucket (AppFlow output)
+   - Processed data bucket (Glue job results)
+   - Error data bucket (failed records)
+   - Scripts bucket (Glue job scripts)
+   - EMS and TMS DynamoDB tables for migration status tracking
+
+2. **MigrationAppFlowStack** - AppFlow flows for data extraction
+   - Creates AppFlow flows for each customer and Salesforce object
+   - Extracts data from Salesforce and stores in S3
+
+3. **MigrationGlueStack** - Glue ETL jobs
+   - Creates Glue jobs for each entity type
+   - Configures Glue Data Catalog and VPC connections
+   - Sets up Spark optimizations for performance
+
+4. **MigrationStepFunctionsStack** - Orchestration
+   - Step Functions state machine for coordinating migration
+   - Executes Glue jobs in parallel within ranks, sequentially across ranks
+
+5. **MigrationMonitoringStack** - Monitoring and alerts
+   - CloudWatch dashboards for migration metrics
+   - SNS topics for failure and success notifications
+   - CloudWatch alarms for error detection
+
+### Deploying Migration Stacks
+
+Migration stacks are automatically deployed as part of the CDK Pipeline for each environment. They are defined in `lib/pipeline-app-stage.ts` and will be deployed when the pipeline runs.
+
+**Prerequisites:**
+- Secrets Manager secrets for Zeus DB and CDC DB connections must exist before deployment
+  - Secret names: `migration-zeus-db-secret-{environment}` and `migration-cdc-db-secret-{environment}`
+  - Or provide custom names via pipeline context: `zeusDbSecretName` and `cdcDbSecretName`
+- VPC with RDS instances accessible
+- AppFlow connection profile configured
+
+**Deploy via Pipeline:**
+The migration stacks are included in the pipeline and will be deployed automatically when you deploy the pipeline stack:
+```bash
+npx cdk deploy SimpplrSalesforceAppflowPipelineStack
+```
+
+**Custom Secret Names:**
+If your secrets use different names, you can pass them via pipeline context:
+```bash
+# Update pipeline-stack.ts to pass context to stages
+# Or set them in cdk.json under context
+```
+
+### Migration Configuration
+
+Migration-specific configuration is in `lib/config/migration-config.ts`:
+- Glue job DPU allocation per entity
+- Step Functions timeout and retry settings
+- S3 data retention policies
+- Entity to job mapping
+
+### Performance Optimizations
+
+All migration stacks include Spark/Glue performance optimizations:
+- Adaptive Query Execution (AQE) enabled
+- Broadcast joins for small reference datasets
+- Parquet format for columnar storage
+- Optimized partitioning and DPU allocation
+- See `MIGRATION_IMPLEMENTATION_PLAN.md` for detailed performance considerations
+
 ## Useful Commands
 
 * `npm run build`   - Compile TypeScript to JavaScript
@@ -248,3 +327,5 @@ Run the sample container application locally:
 * `npx cdk diff`   - Compare deployed stack with current state
 * `npx cdk synth`  - Emit the synthesized CloudFormation template
 * `npx cdk destroy` - Destroy deployed stacks
+* `npm run deploy:migration` - Deploy all migration stacks
+* `npm run synth:migration` - Synthesize migration stacks
