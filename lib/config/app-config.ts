@@ -3,12 +3,12 @@ export const appConfig: AppConfig = {
   version: '0.1.0',
 
   pipeline: {
-    account: '971764590821',
+    account: '533101977259',
     region: 'us-east-1',
     repositoryName: 'client-simpplr-salesforce-appflow',
     repositoryOwner: 'rupe120',
     branch: 'main',
-    connectionArn: 'arn:aws:codeconnections:us-east-1:971764590821:connection/28f626ba-e037-48b7-b835-23050945dbd7',
+    connectionArn: 'arn:aws:codeconnections:us-east-1:533101977259:connection/f6c95e2e-b84b-4b47-be67-f8a514d794ed',
   },
 
   salesforce: {
@@ -24,10 +24,10 @@ export const appConfig: AppConfig = {
       name: 'Example Customer 1',
       salesforceOrgId: 'SALESFORCE_ORG_ID_1', // Unique Salesforce Org ID for this customer
       rdsConfig: {
-        host: 'simpplrtemptargetstack-postgresdatabase0a8a7373-wrgeltpyzupe.cd3pf5p1k9pl.us-east-1.rds.amazonaws.com',
+        host: 'simpplrtemptargetstack-postgresdatabase0a8a7373-3j7r0morhnlq.cmhxw6zfvtzj.us-east-1.rds.amazonaws.com',
         port: 5432,
-        database: 'customer_001_db',
-        secretArn: 'arn:aws:secretsmanager:us-east-1:971764590821:secret:PostgresDatabaseSecret8058A-dOuMy2PmAopi-5SD6Ws',
+        database: 'simpplrdb',
+        secretArn: 'arn:aws:secretsmanager:us-east-1:533101977259:secret:PostgresDatabaseSecret8058A-wDFf66VGvVsQ-t4BSD6',
         engine: 'postgres',
       },
       appFlowConfig: {
@@ -75,11 +75,11 @@ export const appConfig: AppConfig = {
   environments: [
     {
       name: 'dev',
-      account: '971764590821',
+      account: '533101977259',
       region: 'us-east-1',
       requiresApproval: false,
       // Reference to existing VPC that contains the RDS instances
-      vpcId: 'vpc-09f209142675bf3c6', // Update with actual VPC ID where RDS instances are located
+      vpcId: 'vpc-0945a7bbfa144b582' // Update with actual VPC ID where RDS instances are located
     }
   ]
 };
