@@ -7,6 +7,7 @@ import { AppConfig } from './config/app-config';
 
 export interface  PipelineStackProps extends cdk.StackProps {
   appConfig: AppConfig;
+  sandboxPipeline: boolean;
 }
 
 export class PipelineStack extends cdk.Stack {

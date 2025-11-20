@@ -28,13 +28,13 @@ export class MigrationAppFlowStack extends cdk.Stack {
 
     // Create AppFlow connection profile for Salesforce
     const connectionProfile = new appflow.CfnConnectorProfile(this, 'SalesforceConnectionProfile', {
-      connectorProfileName: `${appConfig.salesforce.connectionProfileName}-${environment}`,
+      connectorProfileName: `${appConfig.name}-salesforce-connection-profile-${environment}`,
       connectorType: 'Salesforce',
       connectionMode: 'Public',
       connectorProfileConfig: {
         connectorProfileProperties: {
           salesforce: {
-            instanceUrl: appConfig.salesforce.instanceUrl,
+            instanceUrl: envConfig.salesforce.instanceUrl,
             isSandboxEnvironment: false,
           },
         },
@@ -44,16 +44,11 @@ export class MigrationAppFlowStack extends cdk.Stack {
     // Create flows for each customer
     for (const customer of appConfig.customers) {
       // Get Salesforce objects from customer config or use default migration objects
-      const salesforceObjects = customer.appFlowConfig?.objects || [
-        'User__c',
-        'Account__c',
-        'Contact__c',
-        'CustomObject__c',
-      ];
+      const salesforceObjects = appConfig.appFlowConfig.objectsToTransfer.map((objectToTransfer) => objectToTransfer.sourceObject);
 
       // Create a flow for each Salesforce object
       for (const sfObject of salesforceObjects) {
-        const flowId = `${customer.customerId}-${sfObject}`;
+        const flowId = `${appConfig.name}-${customer.customerId}-${sfObject}-${environment}`;
         const flowName = `migration-${flowId}-${environment}`.toLowerCase();
 
         const flow = new appflow.CfnFlow(this, `Flow-${flowId}`, {

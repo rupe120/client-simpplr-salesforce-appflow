@@ -96,128 +96,34 @@ export class MigrationBusinessLogicStack extends cdk.Stack {
       logGroup: rdsDbInitProviderLogGroup,
     });
 
+    // Create AppFlow connection profile for Salesforce
+    const salesforceConnectorProfile = new appflow.CfnConnectorProfile(this, 'SalesforceConnectionProfile', {
+      connectorProfileName: `${appConfig.name}-salesforce-connection-profile-${envConfig.name}`,
+      connectorType: 'Salesforce',
+      connectionMode: 'Public',
+      connectorProfileConfig: {
+        connectorProfileProperties: {
+          salesforce: {
+            instanceUrl: envConfig.salesforce.instanceUrl,
+            isSandboxEnvironment: false,
+          },
+        },
+      },
+    });
+
     // Create AppFlow resources for each customer (regular sync flows)
     appConfig.customers.forEach((customer) => {
-      // Create transformation Lambda for this customer (if CUSTOM_LAMBDA strategy is used)
-      // Note: Update code path to actual transformation Lambda when implemented
-      const transformLambda = new lambda.Function(this, `TransformLambda-${customer.customerId}`, {
-        functionName: `${appConfig.name}-appflow-transform-${customer.customerId}-${envConfig.name}`,
-        runtime: lambda.Runtime.PYTHON_3_12,
-        handler: 'index.handler',
-        code: lambda.Code.fromAsset('src-backend/rds-database-init'), // Placeholder - update to actual transform code
-        timeout: cdk.Duration.minutes(15),
-        environment: {
-          CUSTOMER_ID: customer.customerId,
-          SALESFORCE_ORG_ID: customer.salesforceOrgId,
-        },
-        description: `AppFlow transformation Lambda for customer ${customer.name}`,
-      });
-
-      transformLambda.grantInvoke(this.appFlowServiceRole);
-
-      // Grant Lambda access to RDS secret
-      const rdsSecret = secretsmanager.Secret.fromSecretCompleteArn(
-        this,
-        `RDSSecret-${customer.customerId}`,
-        customer.rdsConfig.secretArn
-      );
-      rdsSecret.grantRead(transformLambda);
-      rdsSecret.grantRead(this.rdsDbInitLambda);
-
-      // Create custom resource to initialize the database
-      const dbInitCustomResource = new cdk.CustomResource(this, `DbInit-${customer.customerId}`, {
-        serviceToken: rdsDbInitProvider.serviceToken,
-        properties: {
-          RdsHost: customer.rdsConfig.host,
-          RdsPort: customer.rdsConfig.port,
-          DatabaseName: customer.rdsConfig.database,
-          SecretArn: customer.rdsConfig.secretArn,
-          Engine: customer.rdsConfig.engine,
-          CustomerId: customer.customerId,
-          Timestamp: Date.now().toString(),
-        },
-      });
-
-      // Create AppFlow connector profile for Salesforce
-      const salesforceConnectorProfile = new appflow.CfnConnectorProfile(this, `SalesforceConnector-${customer.customerId}`, {
-        connectorProfileName: `${appConfig.salesforce.connectionProfileName}-${customer.customerId}-${envConfig.name}`,
-        connectorType: 'Salesforce',
-        connectionMode: 'Public',
-        connectorProfileConfig: {
-          connectorProfileCredentials: {
-            salesforce: {
-              accessToken: 'PLACEHOLDER',
-              refreshToken: 'PLACEHOLDER',
-              clientCredentialsArn: 'PLACEHOLDER',
-            },
-          },
-          connectorProfileProperties: {
-            salesforce: {
-              instanceUrl: appConfig.salesforce.instanceUrl,
-              isSandboxEnvironment: false,
-            },
-          },
-        },
-      });
-
+      
       // Create AppFlow flows for each Salesforce object (regular sync)
-      customer.appFlowConfig?.transformations.forEach((transformation) => {
-        const rdsConnectorProfile = new appflow.CfnConnectorProfile(this, `RDSConnector-${customer.customerId}-${transformation.sourceObject}`, {
-          connectorProfileName: `rds-${customer.customerId}-${transformation.sourceObject}-${envConfig.name}`.toLowerCase(),
-          connectorType: 'CustomConnector',
-          connectionMode: 'Private',
-          connectorProfileConfig: {
-            connectorProfileCredentials: {
-              customConnector: {
-                authenticationType: 'CUSTOM',
-                custom: {
-                  customAuthenticationType: 'custom',
-                  credentialsMap: {
-                    username: rdsSecret.secretValueFromJson('username').unsafeUnwrap(),
-                    password: rdsSecret.secretValueFromJson('password').unsafeUnwrap(),
-                  },
-                },
-              },
-            },
-            connectorProfileProperties: {
-              customConnector: {
-                profileProperties: {
-                  host: customer.rdsConfig.host,
-                  port: customer.rdsConfig.port.toString(),
-                  database: customer.rdsConfig.database,
-                },
-              },
-            },
-          },
-        });
-
-        const fieldMappingTasks: appflow.CfnFlow.TaskProperty[] = transformation.fieldMappings.map(mapping => ({
-          taskType: 'Map',
-          sourceFields: [mapping.source],
-          taskProperties: [
-            { key: 'DESTINATION_DATA_TYPE', value: 'string' },
-            { key: 'SOURCE_DATA_TYPE', value: 'string' },
-          ],
-          connectorOperator: { salesforce: 'PROJECTION' },
-          destinationField: mapping.destination,
-        }));
-
-        if (transformation.multiRecordStrategy === 'CUSTOM_LAMBDA') {
-          fieldMappingTasks.push({
-            taskType: 'Map',
-            sourceFields: ['*'],
-            taskProperties: [{ key: 'LAMBDA_ARN', value: transformLambda.functionArn }],
-            connectorOperator: { salesforce: 'NO_OP' },
-          });
-        }
-
-        const flow = new appflow.CfnFlow(this, `AppFlowFlow-${customer.customerId}-${transformation.sourceObject}`, {
-          flowName: `${appConfig.name}-${customer.customerId}-${transformation.sourceObject}-${envConfig.name}`.toLowerCase(),
-          description: `Sync ${transformation.sourceObject} from Salesforce to RDS for customer ${customer.name}`,
+      appConfig.appFlowConfig.objectsToTransfer.forEach((objectToTransfer) => {
+       
+        const flow = new appflow.CfnFlow(this, `AppFlowFlow-${customer.customerId}-${objectToTransfer.sourceObject}`, {
+          flowName: `${appConfig.name}-${customer.customerId}-${objectToTransfer.sourceObject}-${envConfig.name}`.toLowerCase(),
+          description: `Sync ${objectToTransfer.sourceObject} from Salesforce to s3 bucket for customer ${customer.name}`,
           triggerConfig: {
             triggerType: 'Scheduled',
             triggerProperties: {
-              scheduleExpression: customer.appFlowConfig.scheduleExpression,
+              scheduleExpression: appConfig.appFlowConfig.scheduleExpression,
               dataPullMode: 'Incremental',
               scheduleStartTime: Date.now() / 1000,
             },
@@ -227,32 +133,40 @@ export class MigrationBusinessLogicStack extends cdk.Stack {
             connectorProfileName: salesforceConnectorProfile.connectorProfileName,
             sourceConnectorProperties: {
               salesforce: {
-                object: transformation.sourceObject,
+                object: objectToTransfer.sourceObject,
                 enableDynamicFieldUpdate: false,
                 includeDeletedRecords: false,
               },
             },
           },
           destinationFlowConfigList: [{
-            connectorType: 'CustomConnector',
-            connectorProfileName: rdsConnectorProfile.connectorProfileName,
+            connectorType: 'S3',
+            connectorProfileName: salesforceConnectorProfile.connectorProfileName,
             destinationConnectorProperties: {
-              customConnector: {
-                entityName: transformation.destinationTable,
-                errorHandlingConfig: {
-                  failOnFirstError: false,
-                  bucketName: storageStack.s3Bucket.bucketName,
-                  bucketPrefix: `appflow-errors/${customer.customerId}/${transformation.sourceObject}`,
+              s3: {
+                bucketName: storageStack.rawDataBucket.bucketName,
+                s3OutputFormatConfig: {
+                  fileType: 'JSON',
+                  aggregationConfig: {
+                    aggregationType: 'SingleFile',
+                  },
                 },
               },
             },
+            
           }],
-          tasks: fieldMappingTasks,
+          tasks: [{
+            taskType: 'Map_all',
+            sourceFields: [], // Must be an empty list for Map_all
+            taskProperties: [{
+              // This must be an empty object
+              key: '',
+              value: '',
+            }],
+          }],
         });
 
         flow.addDependency(salesforceConnectorProfile);
-        flow.addDependency(rdsConnectorProfile);
-        flow.node.addDependency(dbInitCustomResource);
       });
     });
 
