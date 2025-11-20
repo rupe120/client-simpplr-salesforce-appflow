@@ -8,7 +8,7 @@ export const appConfig: AppConfig = {
     repositoryName: 'client-simpplr-salesforce-appflow',
     repositoryOwner: 'rupe120',
     branch: 'main',
-    connectionArn: 'arn:aws:codeconnections:us-east-1:971764590821:connection/3be254b3-90f1-47b6-b97f-6fa4376f4ead',
+    connectionArn: 'arn:aws:codeconnections:us-east-1:971764590821:connection/28f626ba-e037-48b7-b835-23050945dbd7',
   },
 
   salesforce: {
