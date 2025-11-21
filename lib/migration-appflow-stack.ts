@@ -25,7 +25,6 @@ export class MigrationAppFlowStack extends cdk.Stack {
 
     const { appConfig, envConfig, storageStack } = props;
     const environment = envConfig.name;
-    const stackName = `${appConfig.name}-migration-appflow-${environment}`;
 
     // Create flows for each customer
     for (const customer of appConfig.customers) {
@@ -72,7 +71,16 @@ export class MigrationAppFlowStack extends cdk.Stack {
           tasks: [
             {
               taskType: 'MAP_ALL',
-              sourceFields: []
+              sourceFields: [],
+              taskProperties: [
+                {
+                  key: 'EXCLUDE_SOURCE_FIELDS',
+                  value: '[]',
+                },
+              ],
+              connectorOperator: {
+                salesforce: 'NO_OP',
+              },
             },
           ],
         });
