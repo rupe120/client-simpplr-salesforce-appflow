@@ -5,10 +5,10 @@ export const appConfig: AppConfig = {
   pipeline: {
     account: '533101977259',
     region: 'us-east-1',
-    repositoryName: 'protagona-migration-tool',
-    repositoryOwner: 'rupe120',
-    branch: 'mh_sandbox',
-    connectionArn: 'arn:aws:codeconnections:us-east-1:971764590821:connection/28f626ba-e037-48b7-b835-23050945dbd7',
+    repositoryName: 'simpplr',
+    repositoryOwner: 'muhammad-atout-protagona',
+    branch: 'main',
+    connectionArn: 'arn:aws:codeconnections:us-east-1:533101977259:connection/65240ae6-4785-4000-9a83-89acc30b3fc0',
   },
 
   sandboxPipelines: [
