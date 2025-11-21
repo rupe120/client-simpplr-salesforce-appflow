@@ -27,27 +27,37 @@ export class MigrationAppFlowStack extends cdk.Stack {
     const environment = envConfig.name;
     const stackName = `${appConfig.name}-migration-appflow-${environment}`;
 
+    // Determine connector profile name and create if needed
+    let connectorProfileName: string;
+    let connectionProfile: appflow.CfnConnectorProfile | undefined;
 
-    // Create AppFlow connection profile for Salesforce
-    const connectionProfile = new appflow.CfnConnectorProfile(this, 'SalesforceConnectionProfile', {
-      connectorProfileName: `${appConfig.name}-salesforce-connection-profile-${environment}`,
-      connectorType: 'Salesforce',
-      connectionMode: 'Public',
-      connectorProfileConfig: {
-        connectorProfileProperties: {
-          salesforce: {
-            instanceUrl: envConfig.salesforce.instanceUrl,
-            isSandboxEnvironment: false,
+    if (envConfig.salesforce.connectorProfileName) {
+      // Use existing connector profile
+      connectorProfileName = envConfig.salesforce.connectorProfileName;
+      console.log(`Using existing AppFlow connector profile: ${connectorProfileName}`);
+    } else {
+      // Create new AppFlow connection profile for Salesforce
+      connectionProfile = new appflow.CfnConnectorProfile(this, 'SalesforceConnectionProfile', {
+        connectorProfileName: `${appConfig.name}-salesforce-connection-profile-${environment}`,
+        connectorType: 'Salesforce',
+        connectionMode: 'Public',
+        connectorProfileConfig: {
+          connectorProfileProperties: {
+            salesforce: {
+              instanceUrl: envConfig.salesforce.instanceUrl,
+              isSandboxEnvironment: false,
+            },
+
           },
-          
-        },
-        connectorProfileCredentials: {
-          salesforce: {
-            clientCredentialsArn: envConfig.salesforce.secretArn,
+          connectorProfileCredentials: {
+            salesforce: {
+              clientCredentialsArn: envConfig.salesforce.secretArn,
+            }
           }
-        }
-      },
-    });
+        },
+      });
+      connectorProfileName = connectionProfile.connectorProfileName!;
+    }
 
 
     // Create flows for each customer
@@ -76,7 +86,7 @@ export class MigrationAppFlowStack extends cdk.Stack {
                 includeDeletedRecords: false,
               },
             },
-            connectorProfileName: connectionProfile.connectorProfileName!,
+            connectorProfileName: connectorProfileName,
           },
           destinationFlowConfigList: [{
             connectorType: 'S3',
@@ -106,7 +116,10 @@ export class MigrationAppFlowStack extends cdk.Stack {
           ],
         });
 
-        flow.addDependency(connectionProfile);
+        // Add dependency only if we created a new profile
+        if (connectionProfile) {
+          flow.addDependency(connectionProfile);
+        }
         this.flows.set(flowId, flow);
 
         // Grant AppFlow permission to write to S3
@@ -118,7 +131,7 @@ export class MigrationAppFlowStack extends cdk.Stack {
 
     // Outputs
     new cdk.CfnOutput(this, 'ConnectionProfileName', {
-      value: connectionProfile.connectorProfileName!,
+      value: connectorProfileName,
       exportName: `${stackName}-connection-profile`,
     });
   }

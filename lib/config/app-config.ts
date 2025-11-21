@@ -30,6 +30,7 @@ export const appConfig: AppConfig = {
         salesforce: {
           secretArn: 'arn:aws:secretsmanager:us-east-1:971764590821:secret:appflow!971764590821-sf-temp-1763741024664-KGA0wB',
           instanceUrl: 'https://protagona-sf-demo.my.salesforce.com',
+          connectorProfileName: 'sf-temp', // Use existing AppFlow connector profile
         },
         vpcId: 'vpc-09f209142675bf3c6',
         rdsConfig: {
@@ -325,6 +326,7 @@ export class AppConfig {
 export class SalesforceConfig {
     public secretArn: string;
     public instanceUrl: string;
+    public connectorProfileName?: string; // Optional: use existing profile instead of creating new one
 }
 
 export class PipelineConfig {
