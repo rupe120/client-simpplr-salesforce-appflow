@@ -15,6 +15,8 @@ export const appConfig: AppConfig = {
     {
       account: '971764590821',
       region: 'us-east-1',
+      repositoryName: 'client-simpplr-salesforce-appflow',
+      repositoryOwner: 'rupe120',
       branch: 'sandbox-jrusso',
     },
   ],
@@ -298,6 +300,8 @@ export class PipelineConfig {
 export class SandboxPipelineConfig {
     public account: string;
     public region: string;
+    public repositoryName: string;
+    public repositoryOwner: string;
     public branch: string;
 }
 export class EnvironmentConfig {
