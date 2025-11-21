@@ -197,6 +197,10 @@ export class MigrationBusinessLogicStack extends cdk.Stack {
       appConfig: appConfig,
       envConfig: envConfig,
       storageStack: storageStack,
+      env: {
+        account: envConfig.account,
+        region: envConfig.region,
+      }
     });
 
     // Migration Glue Stack
@@ -208,6 +212,10 @@ export class MigrationBusinessLogicStack extends cdk.Stack {
       coreStack: coreStack,
       zeusDbSecret: zeusDbSecret,
       cdcDbSecret: cdcDbSecret,
+      env: {
+        account: envConfig.account,
+        region: envConfig.region,
+      }
     });
 
     // Migration Step Functions Stack
@@ -217,6 +225,10 @@ export class MigrationBusinessLogicStack extends cdk.Stack {
       environment: envConfig.name,
       glueStack: this.migrationGlueStack,
       appFlowStack: this.migrationAppFlowStack,
+      env: {
+        account: envConfig.account,
+        region: envConfig.region,
+      }
     });
 
     // Migration Monitoring Stack
@@ -225,6 +237,10 @@ export class MigrationBusinessLogicStack extends cdk.Stack {
       environment: envConfig.name,
       stepFunctionsStack: this.migrationStepFunctionsStack,
       glueStack: this.migrationGlueStack,
+      env: {
+        account: envConfig.account,
+        region: envConfig.region,
+      }
     });
   }
 }

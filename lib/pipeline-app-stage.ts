@@ -20,6 +20,10 @@ export class PipelineAppStage extends cdk.Stage {
     const coreStack = new ApplicationCoreStack(this, 'ApplicationCoreStack', {
       appConfig: props.appConfig,
       envConfig: props.envConfig,
+      env: {
+        account: props.envConfig.account,
+        region: props.envConfig.region,
+      }
     });
 
     // Unified storage stack (combines application and migration storage)
@@ -28,6 +32,10 @@ export class PipelineAppStage extends cdk.Stage {
       envConfig: props.envConfig,
       migrationConfig: migrationConfig,
       coreStack: coreStack,
+      env: {
+        account: props.envConfig.account,
+        region: props.envConfig.region,
+      }
     });
 
     // Unified business logic stack (combines application and migration logic)
@@ -37,6 +45,10 @@ export class PipelineAppStage extends cdk.Stage {
       migrationConfig: migrationConfig,
       coreStack: coreStack,
       storageStack: storageStack,
+      env: {
+        account: props.envConfig.account,
+        region: props.envConfig.region,
+      }
     });
   }
 }
