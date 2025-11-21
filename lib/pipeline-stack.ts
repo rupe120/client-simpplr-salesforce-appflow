@@ -30,7 +30,7 @@ export class PipelineStack extends cdk.Stack {
       }
     );
     const pipeline = new pipelines.CodePipeline(this, 'Pipeline', {
-      pipelineName: `${props.appConfig.name}-pipeline`,
+      pipelineName: `${props.appConfig.name}-pipeline-${pipelineConfig.branch}`,
       crossAccountKeys: true,
       synth: new pipelines.ShellStep('Synth', {
         input: codeInput, // Replace with your GitHub repo
