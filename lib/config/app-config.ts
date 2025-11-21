@@ -28,7 +28,7 @@ export const appConfig: AppConfig = {
         region: 'us-east-1',
         requiresApproval: false,
         salesforce: {
-          connectionArn: 'arn:aws:secretsmanager:us-east-1:971764590821:secret:appflow!971764590821-sf-temp-1763741024664-KGA0wB',
+          secretArn: 'arn:aws:secretsmanager:us-east-1:971764590821:secret:appflow!971764590821-sf-temp-1763741024664-KGA0wB',
           instanceUrl: 'https://protagona-sf-demo.my.salesforce.com',
         },
         vpcId: 'vpc-09f209142675bf3c6',
@@ -53,7 +53,7 @@ export const appConfig: AppConfig = {
         region: 'us-east-1',
         requiresApproval: false,
         salesforce: {
-          connectionArn: 'arn:aws:secretsmanager:us-east-1:533101977259:secret:appflow!533101977259-sf-temp-1763741024664-KGA0wB',
+          secretArn: 'arn:aws:secretsmanager:us-east-1:533101977259:secret:appflow!533101977259-sf-temp-1763741024664-KGA0wB',
           instanceUrl: 'https://protagona-sf-demo.my.salesforce.com',
         },
         vpcId: 'vpc-0945a7bbfa144b582',
@@ -299,7 +299,7 @@ export const appConfig: AppConfig = {
       salesforce: {
         // Salesforce connection configuration
         // This will be used to create AppFlow connections
-        connectionArn: 'arn:aws:appflow:us-east-1:533101977259:connectorprofile/salesforce-connection-2',
+        secretArn: 'arn:aws:secretsmanager:us-east-1:533101977259:secret:appflow!533101977259-sf-temp-1763741024664-KGA0wB',
         instanceUrl: 'https://protagona-sf-demo.my.salesforce.com', 
       },
 
@@ -323,7 +323,7 @@ export class AppConfig {
 }
 
 export class SalesforceConfig {
-    public connectionArn: string;
+    public secretArn: string;
     public instanceUrl: string;
 }
 

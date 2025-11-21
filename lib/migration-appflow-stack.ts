@@ -39,11 +39,7 @@ export class MigrationAppFlowStack extends cdk.Stack {
             instanceUrl: envConfig.salesforce.instanceUrl,
             isSandboxEnvironment: false,
           },
-        },
-        connectorProfileCredentials: {
-          salesforce: {
-            clientCredentialsArn: envConfig.salesforce.connectionArn,
-          }
+          
         }
       },
     });

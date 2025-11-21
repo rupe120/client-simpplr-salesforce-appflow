@@ -1,0 +1,741 @@
+Fetching AppFlow flow definition for 'test' using profile 'sandbox'...
+{
+    "flowArn": "arn:aws:appflow:us-east-1:971764590821:flow/test",
+    "flowName": "test",
+    "kmsArn": "arn:aws:kms:us-east-1:971764590821:key/991a9844-dec9-4b72-a58c-156fe0d9803d",
+    "flowStatus": "Active",
+    "sourceFlowConfig": {
+        "connectorType": "Salesforce",
+        "connectorProfileName": "sf-temp",
+        "sourceConnectorProperties": {
+            "Salesforce": {
+                "object": "Account",
+                "enableDynamicFieldUpdate": false,
+                "includeDeletedRecords": false,
+                "dataTransferApi": "AUTOMATIC"
+            }
+        }
+    },
+    "destinationFlowConfigList": [
+        {
+            "connectorType": "S3",
+            "destinationConnectorProperties": {
+                "S3": {
+                    "bucketName": "migration-tool-migration-storage-jrusso-raw-data",
+                    "s3OutputFormatConfig": {
+                        "fileType": "JSON",
+                        "prefixConfig": {
+                            "pathPrefixHierarchy": [
+                                "EXECUTION_ID"
+                            ]
+                        },
+                        "aggregationConfig": {
+                            "aggregationType": "None"
+                        }
+                    }
+                }
+            }
+        }
+    ],
+    "lastRunExecutionDetails": {
+        "mostRecentExecutionTime": "2025-11-21T15:05:49.868000-05:00",
+        "mostRecentExecutionStatus": "Successful"
+    },
+    "triggerConfig": {
+        "triggerType": "OnDemand",
+        "triggerProperties": {}
+    },
+    "tasks": [
+        {
+            "sourceFields": [
+                "Id",
+                "IsDeleted",
+                "MasterRecordId",
+                "Name",
+                "Type",
+                "ParentId",
+                "BillingStreet",
+                "BillingCity",
+                "BillingState",
+                "BillingPostalCode",
+                "BillingCountry",
+                "BillingLatitude",
+                "BillingLongitude",
+                "BillingGeocodeAccuracy",
+                "BillingAddress",
+                "ShippingStreet",
+                "ShippingCity",
+                "ShippingState",
+                "ShippingPostalCode",
+                "ShippingCountry",
+                "ShippingLatitude",
+                "ShippingLongitude",
+                "ShippingGeocodeAccuracy",
+                "ShippingAddress",
+                "Phone",
+                "Fax",
+                "Website",
+                "PhotoUrl",
+                "Industry",
+                "AnnualRevenue",
+                "NumberOfEmployees",
+                "Description",
+                "OwnerId",
+                "CreatedDate",
+                "CreatedById",
+                "LastModifiedDate",
+                "LastModifiedById",
+                "SystemModstamp",
+                "LastActivityDate",
+                "LastViewedDate",
+                "LastReferencedDate",
+                "Jigsaw",
+                "JigsawCompanyId",
+                "AccountSource",
+                "SicDesc"
+            ],
+            "connectorOperator": {
+                "Salesforce": "PROJECTION"
+            },
+            "taskType": "Filter",
+            "taskProperties": {}
+        },
+        {
+            "sourceFields": [
+                "Id"
+            ],
+            "connectorOperator": {
+                "Salesforce": "NO_OP"
+            },
+            "destinationField": "Id",
+            "taskType": "Map",
+            "taskProperties": {
+                "DESTINATION_DATA_TYPE": "id",
+                "SOURCE_DATA_TYPE": "id"
+            }
+        },
+        {
+            "sourceFields": [
+                "IsDeleted"
+            ],
+            "connectorOperator": {
+                "Salesforce": "NO_OP"
+            },
+            "destinationField": "IsDeleted",
+            "taskType": "Map",
+            "taskProperties": {
+                "DESTINATION_DATA_TYPE": "boolean",
+                "SOURCE_DATA_TYPE": "boolean"
+            }
+        },
+        {
+            "sourceFields": [
+                "MasterRecordId"
+            ],
+            "connectorOperator": {
+                "Salesforce": "NO_OP"
+            },
+            "destinationField": "MasterRecordId",
+            "taskType": "Map",
+            "taskProperties": {
+                "DESTINATION_DATA_TYPE": "reference",
+                "SOURCE_DATA_TYPE": "reference"
+            }
+        },
+        {
+            "sourceFields": [
+                "Name"
+            ],
+            "connectorOperator": {
+                "Salesforce": "NO_OP"
+            },
+            "destinationField": "Name",
+            "taskType": "Map",
+            "taskProperties": {
+                "DESTINATION_DATA_TYPE": "string",
+                "SOURCE_DATA_TYPE": "string"
+            }
+        },
+        {
+            "sourceFields": [
+                "Type"
+            ],
+            "connectorOperator": {
+                "Salesforce": "NO_OP"
+            },
+            "destinationField": "Type",
+            "taskType": "Map",
+            "taskProperties": {
+                "DESTINATION_DATA_TYPE": "picklist",
+                "SOURCE_DATA_TYPE": "picklist"
+            }
+        },
+        {
+            "sourceFields": [
+                "ParentId"
+            ],
+            "connectorOperator": {
+                "Salesforce": "NO_OP"
+            },
+            "destinationField": "ParentId",
+            "taskType": "Map",
+            "taskProperties": {
+                "DESTINATION_DATA_TYPE": "reference",
+                "SOURCE_DATA_TYPE": "reference"
+            }
+        },
+        {
+            "sourceFields": [
+                "BillingStreet"
+            ],
+            "connectorOperator": {
+                "Salesforce": "NO_OP"
+            },
+            "destinationField": "BillingStreet",
+            "taskType": "Map",
+            "taskProperties": {
+                "DESTINATION_DATA_TYPE": "textarea",
+                "SOURCE_DATA_TYPE": "textarea"
+            }
+        },
+        {
+            "sourceFields": [
+                "BillingCity"
+            ],
+            "connectorOperator": {
+                "Salesforce": "NO_OP"
+            },
+            "destinationField": "BillingCity",
+            "taskType": "Map",
+            "taskProperties": {
+                "DESTINATION_DATA_TYPE": "string",
+                "SOURCE_DATA_TYPE": "string"
+            }
+        },
+        {
+            "sourceFields": [
+                "BillingState"
+            ],
+            "connectorOperator": {
+                "Salesforce": "NO_OP"
+            },
+            "destinationField": "BillingState",
+            "taskType": "Map",
+            "taskProperties": {
+                "DESTINATION_DATA_TYPE": "string",
+                "SOURCE_DATA_TYPE": "string"
+            }
+        },
+        {
+            "sourceFields": [
+                "BillingPostalCode"
+            ],
+            "connectorOperator": {
+                "Salesforce": "NO_OP"
+            },
+            "destinationField": "BillingPostalCode",
+            "taskType": "Map",
+            "taskProperties": {
+                "DESTINATION_DATA_TYPE": "string",
+                "SOURCE_DATA_TYPE": "string"
+            }
+        },
+        {
+            "sourceFields": [
+                "BillingCountry"
+            ],
+            "connectorOperator": {
+                "Salesforce": "NO_OP"
+            },
+            "destinationField": "BillingCountry",
+            "taskType": "Map",
+            "taskProperties": {
+                "DESTINATION_DATA_TYPE": "string",
+                "SOURCE_DATA_TYPE": "string"
+            }
+        },
+        {
+            "sourceFields": [
+                "BillingLatitude"
+            ],
+            "connectorOperator": {
+                "Salesforce": "NO_OP"
+            },
+            "destinationField": "BillingLatitude",
+            "taskType": "Map",
+            "taskProperties": {
+                "DESTINATION_DATA_TYPE": "double",
+                "SOURCE_DATA_TYPE": "double"
+            }
+        },
+        {
+            "sourceFields": [
+                "BillingLongitude"
+            ],
+            "connectorOperator": {
+                "Salesforce": "NO_OP"
+            },
+            "destinationField": "BillingLongitude",
+            "taskType": "Map",
+            "taskProperties": {
+                "DESTINATION_DATA_TYPE": "double",
+                "SOURCE_DATA_TYPE": "double"
+            }
+        },
+        {
+            "sourceFields": [
+                "BillingGeocodeAccuracy"
+            ],
+            "connectorOperator": {
+                "Salesforce": "NO_OP"
+            },
+            "destinationField": "BillingGeocodeAccuracy",
+            "taskType": "Map",
+            "taskProperties": {
+                "DESTINATION_DATA_TYPE": "picklist",
+                "SOURCE_DATA_TYPE": "picklist"
+            }
+        },
+        {
+            "sourceFields": [
+                "BillingAddress"
+            ],
+            "connectorOperator": {
+                "Salesforce": "NO_OP"
+            },
+            "destinationField": "BillingAddress",
+            "taskType": "Map",
+            "taskProperties": {
+                "DESTINATION_DATA_TYPE": "address",
+                "SOURCE_DATA_TYPE": "address"
+            }
+        },
+        {
+            "sourceFields": [
+                "ShippingStreet"
+            ],
+            "connectorOperator": {
+                "Salesforce": "NO_OP"
+            },
+            "destinationField": "ShippingStreet",
+            "taskType": "Map",
+            "taskProperties": {
+                "DESTINATION_DATA_TYPE": "textarea",
+                "SOURCE_DATA_TYPE": "textarea"
+            }
+        },
+        {
+            "sourceFields": [
+                "ShippingCity"
+            ],
+            "connectorOperator": {
+                "Salesforce": "NO_OP"
+            },
+            "destinationField": "ShippingCity",
+            "taskType": "Map",
+            "taskProperties": {
+                "DESTINATION_DATA_TYPE": "string",
+                "SOURCE_DATA_TYPE": "string"
+            }
+        },
+        {
+            "sourceFields": [
+                "ShippingState"
+            ],
+            "connectorOperator": {
+                "Salesforce": "NO_OP"
+            },
+            "destinationField": "ShippingState",
+            "taskType": "Map",
+            "taskProperties": {
+                "DESTINATION_DATA_TYPE": "string",
+                "SOURCE_DATA_TYPE": "string"
+            }
+        },
+        {
+            "sourceFields": [
+                "ShippingPostalCode"
+            ],
+            "connectorOperator": {
+                "Salesforce": "NO_OP"
+            },
+            "destinationField": "ShippingPostalCode",
+            "taskType": "Map",
+            "taskProperties": {
+                "DESTINATION_DATA_TYPE": "string",
+                "SOURCE_DATA_TYPE": "string"
+            }
+        },
+        {
+            "sourceFields": [
+                "ShippingCountry"
+            ],
+            "connectorOperator": {
+                "Salesforce": "NO_OP"
+            },
+            "destinationField": "ShippingCountry",
+            "taskType": "Map",
+            "taskProperties": {
+                "DESTINATION_DATA_TYPE": "string",
+                "SOURCE_DATA_TYPE": "string"
+            }
+        },
+        {
+            "sourceFields": [
+                "ShippingLatitude"
+            ],
+            "connectorOperator": {
+                "Salesforce": "NO_OP"
+            },
+            "destinationField": "ShippingLatitude",
+            "taskType": "Map",
+            "taskProperties": {
+                "DESTINATION_DATA_TYPE": "double",
+                "SOURCE_DATA_TYPE": "double"
+            }
+        },
+        {
+            "sourceFields": [
+                "ShippingLongitude"
+            ],
+            "connectorOperator": {
+                "Salesforce": "NO_OP"
+            },
+            "destinationField": "ShippingLongitude",
+            "taskType": "Map",
+            "taskProperties": {
+                "DESTINATION_DATA_TYPE": "double",
+                "SOURCE_DATA_TYPE": "double"
+            }
+        },
+        {
+            "sourceFields": [
+                "ShippingGeocodeAccuracy"
+            ],
+            "connectorOperator": {
+                "Salesforce": "NO_OP"
+            },
+            "destinationField": "ShippingGeocodeAccuracy",
+            "taskType": "Map",
+            "taskProperties": {
+                "DESTINATION_DATA_TYPE": "picklist",
+                "SOURCE_DATA_TYPE": "picklist"
+            }
+        },
+        {
+            "sourceFields": [
+                "ShippingAddress"
+            ],
+            "connectorOperator": {
+                "Salesforce": "NO_OP"
+            },
+            "destinationField": "ShippingAddress",
+            "taskType": "Map",
+            "taskProperties": {
+                "DESTINATION_DATA_TYPE": "address",
+                "SOURCE_DATA_TYPE": "address"
+            }
+        },
+        {
+            "sourceFields": [
+                "Phone"
+            ],
+            "connectorOperator": {
+                "Salesforce": "NO_OP"
+            },
+            "destinationField": "Phone",
+            "taskType": "Map",
+            "taskProperties": {
+                "DESTINATION_DATA_TYPE": "phone",
+                "SOURCE_DATA_TYPE": "phone"
+            }
+        },
+        {
+            "sourceFields": [
+                "Fax"
+            ],
+            "connectorOperator": {
+                "Salesforce": "NO_OP"
+            },
+            "destinationField": "Fax",
+            "taskType": "Map",
+            "taskProperties": {
+                "DESTINATION_DATA_TYPE": "phone",
+                "SOURCE_DATA_TYPE": "phone"
+            }
+        },
+        {
+            "sourceFields": [
+                "Website"
+            ],
+            "connectorOperator": {
+                "Salesforce": "NO_OP"
+            },
+            "destinationField": "Website",
+            "taskType": "Map",
+            "taskProperties": {
+                "DESTINATION_DATA_TYPE": "url",
+                "SOURCE_DATA_TYPE": "url"
+            }
+        },
+        {
+            "sourceFields": [
+                "PhotoUrl"
+            ],
+            "connectorOperator": {
+                "Salesforce": "NO_OP"
+            },
+            "destinationField": "PhotoUrl",
+            "taskType": "Map",
+            "taskProperties": {
+                "DESTINATION_DATA_TYPE": "url",
+                "SOURCE_DATA_TYPE": "url"
+            }
+        },
+        {
+            "sourceFields": [
+                "Industry"
+            ],
+            "connectorOperator": {
+                "Salesforce": "NO_OP"
+            },
+            "destinationField": "Industry",
+            "taskType": "Map",
+            "taskProperties": {
+                "DESTINATION_DATA_TYPE": "picklist",
+                "SOURCE_DATA_TYPE": "picklist"
+            }
+        },
+        {
+            "sourceFields": [
+                "AnnualRevenue"
+            ],
+            "connectorOperator": {
+                "Salesforce": "NO_OP"
+            },
+            "destinationField": "AnnualRevenue",
+            "taskType": "Map",
+            "taskProperties": {
+                "DESTINATION_DATA_TYPE": "currency",
+                "SOURCE_DATA_TYPE": "currency"
+            }
+        },
+        {
+            "sourceFields": [
+                "NumberOfEmployees"
+            ],
+            "connectorOperator": {
+                "Salesforce": "NO_OP"
+            },
+            "destinationField": "NumberOfEmployees",
+            "taskType": "Map",
+            "taskProperties": {
+                "DESTINATION_DATA_TYPE": "int",
+                "SOURCE_DATA_TYPE": "int"
+            }
+        },
+        {
+            "sourceFields": [
+                "Description"
+            ],
+            "connectorOperator": {
+                "Salesforce": "NO_OP"
+            },
+            "destinationField": "Description",
+            "taskType": "Map",
+            "taskProperties": {
+                "DESTINATION_DATA_TYPE": "textarea",
+                "SOURCE_DATA_TYPE": "textarea"
+            }
+        },
+        {
+            "sourceFields": [
+                "OwnerId"
+            ],
+            "connectorOperator": {
+                "Salesforce": "NO_OP"
+            },
+            "destinationField": "OwnerId",
+            "taskType": "Map",
+            "taskProperties": {
+                "DESTINATION_DATA_TYPE": "reference",
+                "SOURCE_DATA_TYPE": "reference"
+            }
+        },
+        {
+            "sourceFields": [
+                "CreatedDate"
+            ],
+            "connectorOperator": {
+                "Salesforce": "NO_OP"
+            },
+            "destinationField": "CreatedDate",
+            "taskType": "Map",
+            "taskProperties": {
+                "DESTINATION_DATA_TYPE": "datetime",
+                "SOURCE_DATA_TYPE": "datetime"
+            }
+        },
+        {
+            "sourceFields": [
+                "CreatedById"
+            ],
+            "connectorOperator": {
+                "Salesforce": "NO_OP"
+            },
+            "destinationField": "CreatedById",
+            "taskType": "Map",
+            "taskProperties": {
+                "DESTINATION_DATA_TYPE": "reference",
+                "SOURCE_DATA_TYPE": "reference"
+            }
+        },
+        {
+            "sourceFields": [
+                "LastModifiedDate"
+            ],
+            "connectorOperator": {
+                "Salesforce": "NO_OP"
+            },
+            "destinationField": "LastModifiedDate",
+            "taskType": "Map",
+            "taskProperties": {
+                "DESTINATION_DATA_TYPE": "datetime",
+                "SOURCE_DATA_TYPE": "datetime"
+            }
+        },
+        {
+            "sourceFields": [
+                "LastModifiedById"
+            ],
+            "connectorOperator": {
+                "Salesforce": "NO_OP"
+            },
+            "destinationField": "LastModifiedById",
+            "taskType": "Map",
+            "taskProperties": {
+                "DESTINATION_DATA_TYPE": "reference",
+                "SOURCE_DATA_TYPE": "reference"
+            }
+        },
+        {
+            "sourceFields": [
+                "SystemModstamp"
+            ],
+            "connectorOperator": {
+                "Salesforce": "NO_OP"
+            },
+            "destinationField": "SystemModstamp",
+            "taskType": "Map",
+            "taskProperties": {
+                "DESTINATION_DATA_TYPE": "datetime",
+                "SOURCE_DATA_TYPE": "datetime"
+            }
+        },
+        {
+            "sourceFields": [
+                "LastActivityDate"
+            ],
+            "connectorOperator": {
+                "Salesforce": "NO_OP"
+            },
+            "destinationField": "LastActivityDate",
+            "taskType": "Map",
+            "taskProperties": {
+                "DESTINATION_DATA_TYPE": "date",
+                "SOURCE_DATA_TYPE": "date"
+            }
+        },
+        {
+            "sourceFields": [
+                "LastViewedDate"
+            ],
+            "connectorOperator": {
+                "Salesforce": "NO_OP"
+            },
+            "destinationField": "LastViewedDate",
+            "taskType": "Map",
+            "taskProperties": {
+                "DESTINATION_DATA_TYPE": "datetime",
+                "SOURCE_DATA_TYPE": "datetime"
+            }
+        },
+        {
+            "sourceFields": [
+                "LastReferencedDate"
+            ],
+            "connectorOperator": {
+                "Salesforce": "NO_OP"
+            },
+            "destinationField": "LastReferencedDate",
+            "taskType": "Map",
+            "taskProperties": {
+                "DESTINATION_DATA_TYPE": "datetime",
+                "SOURCE_DATA_TYPE": "datetime"
+            }
+        },
+        {
+            "sourceFields": [
+                "Jigsaw"
+            ],
+            "connectorOperator": {
+                "Salesforce": "NO_OP"
+            },
+            "destinationField": "Jigsaw",
+            "taskType": "Map",
+            "taskProperties": {
+                "DESTINATION_DATA_TYPE": "string",
+                "SOURCE_DATA_TYPE": "string"
+            }
+        },
+        {
+            "sourceFields": [
+                "JigsawCompanyId"
+            ],
+            "connectorOperator": {
+                "Salesforce": "NO_OP"
+            },
+            "destinationField": "JigsawCompanyId",
+            "taskType": "Map",
+            "taskProperties": {
+                "DESTINATION_DATA_TYPE": "string",
+                "SOURCE_DATA_TYPE": "string"
+            }
+        },
+        {
+            "sourceFields": [
+                "AccountSource"
+            ],
+            "connectorOperator": {
+                "Salesforce": "NO_OP"
+            },
+            "destinationField": "AccountSource",
+            "taskType": "Map",
+            "taskProperties": {
+                "DESTINATION_DATA_TYPE": "picklist",
+                "SOURCE_DATA_TYPE": "picklist"
+            }
+        },
+        {
+            "sourceFields": [
+                "SicDesc"
+            ],
+            "connectorOperator": {
+                "Salesforce": "NO_OP"
+            },
+            "destinationField": "SicDesc",
+            "taskType": "Map",
+            "taskProperties": {
+                "DESTINATION_DATA_TYPE": "string",
+                "SOURCE_DATA_TYPE": "string"
+            }
+        }
+    ],
+    "createdAt": "2025-11-21T15:05:36.579000-05:00",
+    "lastUpdatedAt": "2025-11-21T15:05:36.579000-05:00",
+    "createdBy": "arn:aws:sts::971764590821:assumed-role/ProtagonaAdminAccessRole/josh.russo@protagona.com",
+    "lastUpdatedBy": "arn:aws:sts::971764590821:assumed-role/ProtagonaAdminAccessRole/josh.russo@protagona.com",
+    "tags": {},
+    "metadataCatalogConfig": {},
+    "schemaVersion": 1
+}
