@@ -60,13 +60,10 @@ export class MigrationAppFlowStack extends cdk.Stack {
               s3: {
                 bucketName: storageStack.rawDataBucket.bucketName,
                 s3OutputFormatConfig: {
-                  fileType: 'PARQUET', 
+                  fileType: 'PARQUET',
                   prefixConfig: {
                     prefixType: 'PATH',
                     prefixFormat: 'DAY',
-                  },
-                  aggregationConfig: {
-                    aggregationType: 'SingleFile',
                   },
                 },
               },
@@ -76,12 +73,6 @@ export class MigrationAppFlowStack extends cdk.Stack {
             {
               taskType: 'Map_all',
               sourceFields: [],
-              taskProperties: [
-                {
-                  key: 'EXCLUDE_SOURCE_FIELDS',
-                  value: '[]',
-                },
-              ],
               connectorOperator: {
                 salesforce: 'NO_OP',
               },
