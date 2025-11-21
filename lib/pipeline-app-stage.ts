@@ -18,6 +18,7 @@ export class PipelineAppStage extends cdk.Stage {
 
     // Core infrastructure stack (VPC)
     const coreStack = new ApplicationCoreStack(this, 'ApplicationCoreStack', {
+      stackName: `${props.appConfig.name}-core-${props.envConfig.name}`,
       appConfig: props.appConfig,
       envConfig: props.envConfig,
       env: {
@@ -28,6 +29,7 @@ export class PipelineAppStage extends cdk.Stage {
 
     // Unified storage stack (combines application and migration storage)
     const storageStack = new MigrationStorageStack(this, 'MigrationStorageStack', {
+      stackName: `${props.appConfig.name}-migration-storage-${props.envConfig.name}`,
       appConfig: props.appConfig,
       envConfig: props.envConfig,
       migrationConfig: migrationConfig,
@@ -40,6 +42,7 @@ export class PipelineAppStage extends cdk.Stage {
 
     // Unified business logic stack (combines application and migration logic)
     new MigrationBusinessLogicStack(this, 'MigrationBusinessLogicStack', {
+      stackName: `${props.appConfig.name}-migration-business-logic-${props.envConfig.name}`,
       appConfig: props.appConfig,
       envConfig: props.envConfig,
       migrationConfig: migrationConfig,

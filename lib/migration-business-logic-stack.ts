@@ -194,6 +194,7 @@ export class MigrationBusinessLogicStack extends cdk.Stack {
 
     // Migration AppFlow Stack (for migration data extraction)
     this.migrationAppFlowStack = new MigrationAppFlowStack(this, 'MigrationAppFlowStack', {
+      stackName: `${appConfig.name}-migration-appflow-${envConfig.name}`,
       appConfig: appConfig,
       envConfig: envConfig,
       storageStack: storageStack,
@@ -205,6 +206,7 @@ export class MigrationBusinessLogicStack extends cdk.Stack {
 
     // Migration Glue Stack
     this.migrationGlueStack = new MigrationGlueStack(this, 'MigrationGlueStack', {
+      stackName: `${appConfig.name}-migration-glue-${envConfig.name}`,
       appConfig: appConfig,
       migrationConfig: migrationConfig,
       environment: envConfig.name,
@@ -220,6 +222,7 @@ export class MigrationBusinessLogicStack extends cdk.Stack {
 
     // Migration Step Functions Stack
     this.migrationStepFunctionsStack = new MigrationStepFunctionsStack(this, 'MigrationStepFunctionsStack', {
+      stackName: `${appConfig.name}-migration-stepfunctions-${envConfig.name}`,
       appConfig: appConfig,
       migrationConfig: migrationConfig,
       environment: envConfig.name,
@@ -233,6 +236,7 @@ export class MigrationBusinessLogicStack extends cdk.Stack {
 
     // Migration Monitoring Stack
     this.migrationMonitoringStack = new MigrationMonitoringStack(this, 'MigrationMonitoringStack', {
+      stackName: `${appConfig.name}-migration-monitoring-${envConfig.name}`,
       appConfig: appConfig,
       environment: envConfig.name,
       stepFunctionsStack: this.migrationStepFunctionsStack,
