@@ -27,7 +27,7 @@ export class ApplicationCoreStack extends cdk.Stack {
     this.vpc = vpc;
 
 
-    const salesforceConnectorSecret = secretsmanager.Secret.fromSecretCompleteArn(this, 'SalesforceConnectorSecret', envConfig.salesforce.connectionArn);
+    const salesforceConnectorSecret = secretsmanager.Secret.fromSecretCompleteArn(this, 'SalesforceConnectorSecret', props.envConfig.salesforce.connectionArn);
     salesforceConnectorSecret.grantRead(new iam.ServicePrincipal('appflow.amazonaws.com'));
 
 
