@@ -71,8 +71,8 @@ export class MigrationAppFlowStack extends cdk.Stack {
           }],
           tasks: [
             {
-              taskType: 'Map',
-              sourceFields: ['*'], // Map all fields
+              taskType: 'MAP_ALL',
+              sourceFields: [],
               destinationField: '',
               taskProperties: [],
             },
