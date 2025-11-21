@@ -3,12 +3,12 @@ import * as pipelines from 'aws-cdk-lib/pipelines';
 import * as codebuild from 'aws-cdk-lib/aws-codebuild';
 import { Construct } from 'constructs';
 import { PipelineAppStage } from './pipeline-app-stage';
-import { AppConfig, PipelineConfig } from './config/app-config';
+import { AppConfig, SandboxConfig } from './config/app-config';
 
 export interface  PipelineStackProps extends cdk.StackProps {
   appConfig: AppConfig;
   sandboxPipeline: boolean;
-  pipelineConfig: PipelineConfig;
+  sandboxConfig: SandboxConfig | null;
 }
 
 export class PipelineStack extends cdk.Stack {
@@ -16,11 +16,17 @@ export class PipelineStack extends cdk.Stack {
     super(scope, id, props);
 
 
+    if (props.sandboxPipeline && !props.sandboxConfig) {
+      throw new Error('Sandbox config is required when sandbox pipeline is true');
+    }
+
+    const pipelineConfig = props.sandboxPipeline && props.sandboxConfig ? props.sandboxConfig.pipelineConfig : props.appConfig.pipeline;
+
     // Create the pipeline
-    const repoString = `${props.pipelineConfig.repositoryOwner}/${props.pipelineConfig.repositoryName}`;
-    const codeInput = pipelines.CodePipelineSource.connection(repoString, props.pipelineConfig.branch,
+    const repoString = `${pipelineConfig.repositoryOwner}/${pipelineConfig.repositoryName}`;
+    const codeInput = pipelines.CodePipelineSource.connection(repoString, pipelineConfig.branch,
       {
-        connectionArn: props.pipelineConfig.connectionArn,
+        connectionArn: pipelineConfig.connectionArn,
       }
     );
     const pipeline = new pipelines.CodePipeline(this, 'Pipeline', {
@@ -34,14 +40,16 @@ export class PipelineStack extends cdk.Stack {
           'npx cdk synth'
         ],
         env: {
-          SIMPPPLR_SALESFORCE_APPFLOW_DEPLOYMENT_BRANCH: props.pipelineConfig.branch,
+          SIMPPPLR_SALESFORCE_APPFLOW_DEPLOYMENT_BRANCH: pipelineConfig.branch,
         }
       }),
     });
 
     // Add the application stage
-    for (const environment of props.appConfig.environments) {
-      const pipelineStage = new PipelineAppStage(this, 'AppStage', {
+    const envsToBuild = props.sandboxPipeline && props.sandboxConfig ? [props.sandboxConfig.environmentConfig] : props.appConfig.environments;
+
+    for (const environment of envsToBuild) {
+      const pipelineStage = new PipelineAppStage(this, `AppStage-${environment.name}`, {
         appConfig: props.appConfig,
         envConfig: environment,
         env: {

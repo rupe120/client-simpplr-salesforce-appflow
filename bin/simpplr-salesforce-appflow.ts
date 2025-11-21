@@ -11,27 +11,35 @@ if (!deploymentBranch) {
 }
 
 if (deploymentBranch === 'main') {
+  const stackEnv = { account: appConfig.pipeline.account, region: appConfig.pipeline.region };
+  console.log('Deploying pipeline stack for main branch');
+  console.log(stackEnv);
+  console.log(appConfig.pipeline);
   // Deploy the pipeline stack
   new PipelineStack(app, 'SimpplrSalesforceAppflowPipelineStack', {
     stackName: `${appConfig.name}-pipeline-stack`,
     appConfig: appConfig,
     sandboxPipeline: false,
-    pipelineConfig: appConfig.pipeline,
-    env: { account: appConfig.pipeline.account, region: appConfig.pipeline.region },
+    sandboxConfig: null,
+    env: stackEnv,
   });
 } else {
 
-  const sandboxPipeline = appConfig.sandboxPipelines.find(pipeline => pipeline.branch === deploymentBranch);
-  if (!sandboxPipeline) {
-    throw new Error(`Sandbox pipeline config not found for branch ${deploymentBranch}`);
+  const sandboxEnvironment = appConfig.sandboxEnvironments.find(environment => environment.pipelineConfig.branch === deploymentBranch);
+  if (!sandboxEnvironment) {
+    throw new Error(`Sandbox environment not found for branch ${deploymentBranch}`);
   }
+  const stackEnv = { account: sandboxEnvironment.environmentConfig.account, region: sandboxEnvironment.environmentConfig.region };
+  console.log(`Deploying sandbox pipeline stack for branch ${deploymentBranch}`);
+  console.log(stackEnv);
+  console.log(sandboxEnvironment.pipelineConfig);
   // Deploy the sandbox pipeline stack
   new PipelineStack(app, `SalesforceMigrationSandboxPipelineStack-${deploymentBranch}`, {
     stackName: `${appConfig.name}-sandbox-pipeline-stack-${deploymentBranch}`,
     appConfig: appConfig,
     sandboxPipeline: true,
-    pipelineConfig: sandboxPipeline,
-    env: { account: sandboxPipeline.account, region: sandboxPipeline.region },
+    sandboxConfig: sandboxEnvironment,
+    env: stackEnv,
   });
 }
 

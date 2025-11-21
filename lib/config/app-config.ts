@@ -1,5 +1,5 @@
 export const appConfig: AppConfig = {
-  name: 'simpplr-salesforce-appflow',
+  name: 'migration-tool',
   version: '0.1.0',
 
   pipeline: {
@@ -23,7 +23,7 @@ export const appConfig: AppConfig = {
         connectionArn: 'arn:aws:codeconnections:us-east-1:971764590821:connection/28f626ba-e037-48b7-b835-23050945dbd7'
       },
       environmentConfig: {
-        name: 'sandbox-jrusso',
+        name: 'jrusso',
         account: '971764590821',
         region: 'us-east-1',
         requiresApproval: false,
