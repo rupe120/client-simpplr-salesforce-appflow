@@ -61,6 +61,10 @@ export class MigrationAppFlowStack extends cdk.Stack {
                 bucketName: storageStack.rawDataBucket.bucketName,
                 s3OutputFormatConfig: {
                   fileType: 'PARQUET', 
+                  prefixConfig: {
+                    prefixType: 'PATH',
+                    prefixFormat: 'DAY',
+                  },
                   aggregationConfig: {
                     aggregationType: 'SingleFile',
                   },
