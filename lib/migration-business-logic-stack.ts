@@ -216,6 +216,7 @@ export class MigrationBusinessLogicStack extends cdk.Stack {
       migrationConfig: migrationConfig,
       environment: envConfig.name,
       glueStack: this.migrationGlueStack,
+      appFlowStack: this.migrationAppFlowStack,
     });
 
     // Migration Monitoring Stack

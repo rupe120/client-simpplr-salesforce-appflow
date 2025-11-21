@@ -6,7 +6,7 @@ import * as s3 from 'aws-cdk-lib/aws-s3';
 import * as secretsmanager from 'aws-cdk-lib/aws-secretsmanager';
 import { Construct } from 'constructs';
 import { AppConfig } from './config/app-config';
-import { MigrationConfig } from './config/migration-config';
+import { MigrationConfig, getAllGlueScripts, GlueScriptConfig } from './config/migration-config';
 import { MigrationStorageStack } from './migration-storage-stack';
 import { ApplicationCoreStack } from './application-core-stack';
 
@@ -115,22 +115,19 @@ export class MigrationGlueStack extends cdk.Stack {
     });
     rawDataCrawler.addDependency(migrationDatabase);
 
-    // Create Glue jobs for each entity
-    // This is a simplified version - in practice, you'd load entity list from migration_jobs.json
-    const entityList = this.getEntityList(migrationConfig);
+    // Create Glue jobs from rankOrderExecution configuration
+    const allGlueScripts = getAllGlueScripts();
 
-    for (const entityName of entityList) {
-      const dpuAllocation = this.getDpuAllocation(entityName, migrationConfig);
+    for (const scriptConfig of allGlueScripts) {
       const job = this.createEntityGlueJob(
-        entityName,
-        dpuAllocation,
+        scriptConfig,
         storageStack,
         zeusDbSecret,
         cdcDbSecret,
         migrationConfig,
         environment
       );
-      this.glueJobs.set(entityName, job);
+      this.glueJobs.set(scriptConfig.entityName, job);
     }
 
     // Outputs
@@ -146,28 +143,27 @@ export class MigrationGlueStack extends cdk.Stack {
   }
 
   private createEntityGlueJob(
-    entityName: string,
-    dpuAllocation: number,
+    scriptConfig: GlueScriptConfig,
     storageStack: MigrationStorageStack,
     zeusDbSecret: secretsmanager.ISecret,
     cdcDbSecret: secretsmanager.ISecret,
     migrationConfig: MigrationConfig,
     environment: string
   ): glue.CfnJob {
-    const jobName = `migration-${entityName}-${environment}`;
+    const jobName = `migration-${scriptConfig.entityName}-${environment}`;
 
-    return new glue.CfnJob(this, `GlueJob-${entityName}`, {
+    return new glue.CfnJob(this, `GlueJob-${scriptConfig.entityName}`, {
       name: jobName,
       role: this.glueServiceRole.roleArn,
       command: {
         name: 'glueetl',
-        scriptLocation: `s3://${storageStack.scriptsBucket.bucketName}/glue-jobs/${entityName}/script.py`,
+        scriptLocation: `s3://${storageStack.scriptsBucket.bucketName}/glue-jobs/${scriptConfig.scriptName}/script.py`,
         pythonVersion: migrationConfig.glue.pythonVersion,
       },
       glueVersion: migrationConfig.glue.glueVersion,
-      maxCapacity: dpuAllocation,
+      maxCapacity: scriptConfig.dpuAllocation,
       maxRetries: migrationConfig.glue.maxRetries,
-      timeout: migrationConfig.glue.jobTimeout,
+      timeout: scriptConfig.timeoutMinutes,
       executionProperty: {
         maxConcurrentRuns: 1, // Prevent duplicate runs
       },
@@ -181,7 +177,9 @@ export class MigrationGlueStack extends cdk.Stack {
         '--enable-spark-ui': 'true',
         '--spark-event-logs-path': `s3://${storageStack.logsBucket.bucketName}/spark-logs/`,
         '--enable-glue-datacatalog': 'true',
-        '--ENTITY_NAME': entityName,
+        '--ENTITY_NAME': scriptConfig.entityName,
+        '--TARGET_SCHEMA': scriptConfig.targetSchema,
+        '--TARGET_TABLE': scriptConfig.targetTable,
         '--ZEUS_DB_SECRET_ARN': zeusDbSecret.secretArn,
         '--CDC_DB_SECRET_ARN': cdcDbSecret.secretArn,
         '--RAW_DATA_BUCKET': storageStack.rawDataBucket.bucketName,
@@ -199,16 +197,6 @@ export class MigrationGlueStack extends cdk.Stack {
         ].join(','),
       },
     });
-  }
-
-  private getDpuAllocation(entityName: string, migrationConfig: MigrationConfig): number {
-    return migrationConfig.glue.dpuAllocation[entityName] || 5; // Default 5 DPUs
-  }
-
-  private getEntityList(migrationConfig: MigrationConfig): string[] {
-    // In practice, load from migration_jobs.json
-    // For now, return keys from dpuAllocation
-    return Object.keys(migrationConfig.glue.dpuAllocation);
   }
 }
 
