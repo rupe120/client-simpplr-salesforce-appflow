@@ -5,7 +5,10 @@ import { appConfig } from '../lib/config/app-config';
 
 const app = new cdk.App();
 
-const deploymentBranch = process.env.SIMPPPLR_SALESFORCE_APPFLOW_DEPLOYMENT_BRANCH || 'main';
+const deploymentBranch = process.env.SIMPPPLR_SALESFORCE_APPFLOW_DEPLOYMENT_BRANCH;
+if (!deploymentBranch) {
+  throw new Error('SIMPPPLR_SALESFORCE_APPFLOW_DEPLOYMENT_BRANCH environment variable is not set');
+}
 
 if (deploymentBranch === 'main') {
   // Deploy the pipeline stack
@@ -13,6 +16,7 @@ if (deploymentBranch === 'main') {
     stackName: `${appConfig.name}-pipeline-stack`,
     appConfig: appConfig,
     sandboxPipeline: false,
+    PipelineBranch: deploymentBranch,
     env: { account: appConfig.pipeline.account, region: appConfig.pipeline.region },
   });
 } else {
@@ -26,6 +30,7 @@ if (deploymentBranch === 'main') {
     stackName: `${appConfig.name}-sandbox-pipeline-stack-${deploymentBranch}`,
     appConfig: appConfig,
     sandboxPipeline: true,
+    PipelineBranch: deploymentBranch,
     env: { account: sandboxPipeline.account, region: sandboxPipeline.region },
   });
 }

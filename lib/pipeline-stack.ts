@@ -8,6 +8,7 @@ import { AppConfig } from './config/app-config';
 export interface  PipelineStackProps extends cdk.StackProps {
   appConfig: AppConfig;
   sandboxPipeline: boolean;
+  PipelineBranch: string;
 }
 
 export class PipelineStack extends cdk.Stack {
@@ -17,7 +18,7 @@ export class PipelineStack extends cdk.Stack {
 
     // Create the pipeline
     const repoString = `${props.appConfig.pipeline.repositoryOwner}/${props.appConfig.pipeline.repositoryName}`;
-    const codeInput = pipelines.CodePipelineSource.connection(repoString, props.appConfig.pipeline.branch,
+    const codeInput = pipelines.CodePipelineSource.connection(repoString, props.PipelineBranch,
       {
         connectionArn: props.appConfig.pipeline.connectionArn,
       }
@@ -31,7 +32,10 @@ export class PipelineStack extends cdk.Stack {
           'npm ci',
           'npm run build',
           'npx cdk synth'
-        ]
+        ],
+        env: {
+          SIMPPPLR_SALESFORCE_APPFLOW_DEPLOYMENT_BRANCH: props.PipelineBranch,
+        }
       }),
     });
 
