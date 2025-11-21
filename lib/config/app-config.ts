@@ -36,6 +36,31 @@ export const appConfig: AppConfig = {
           secretArn: 'arn:aws:secretsmanager:us-east-1:971764590821:secret:PostgresDatabaseSecret8058A-dOuMy2PmAopi-5SD6Ws',
         },
       },
+    },
+    {
+      // MAtout sandbox environment
+      pipelineConfig: {
+        account: '533101977259',
+        region: 'us-east-1',
+        repositoryName: 'client-simpplr-salesforce-appflow',
+        repositoryOwner: 'muhammad-atout-protagona',
+        branch: 'sandbox-matout',
+        connectionArn: 'arn:aws:codeconnections:us-east-1:533101977259:connection/65240ae6-4785-4000-9a83-89acc30b3fc0',
+      },
+      environmentConfig: {
+        name: 'matout',
+        account: '533101977259',
+        region: 'us-east-1',
+        requiresApproval: false,
+        salesforce: {
+          connectionArn: 'arn:aws:secretsmanager:us-east-1:533101977259:secret:appflow!533101977259-sf-temp-1763741024664-KGA0wB',
+          instanceUrl: 'https://protagona-sf-demo.my.salesforce.com',
+        },
+        vpcId: 'vpc-0945a7bbfa144b582',
+        rdsConfig: {
+          secretArn: 'arn:aws:secretsmanager:us-east-1:533101977259:secret:PostgresDatabaseSecret8058A-wDFf66VGvVsQ-t4BSD6',
+        },
+      },
     }
   ],
   
