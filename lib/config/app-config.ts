@@ -18,6 +18,7 @@ export const appConfig: AppConfig = {
       repositoryName: 'client-simpplr-salesforce-appflow',
       repositoryOwner: 'rupe120',
       branch: 'sandbox-jrusso',
+      connectionArn: 'arn:aws:codeconnections:us-east-1:971764590821:connection/28f626ba-e037-48b7-b835-23050945dbd7'
     },
   ],
   
@@ -277,7 +278,7 @@ export class AppConfig {
     public name: string;
     public version: string;
     public pipeline: PipelineConfig;
-    public sandboxPipelines: SandboxPipelineConfig[];
+    public sandboxPipelines: PipelineConfig[];
     public appFlowConfig: AppFlowConfig;
     public customers: CustomerConfig[];
     public environments: EnvironmentConfig[] = [];
@@ -297,13 +298,6 @@ export class PipelineConfig {
     public connectionArn: string;
 }
 
-export class SandboxPipelineConfig {
-    public account: string;
-    public region: string;
-    public repositoryName: string;
-    public repositoryOwner: string;
-    public branch: string;
-}
 export class EnvironmentConfig {
     public name: string;
     public account: string;

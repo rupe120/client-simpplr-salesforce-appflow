@@ -16,7 +16,7 @@ if (deploymentBranch === 'main') {
     stackName: `${appConfig.name}-pipeline-stack`,
     appConfig: appConfig,
     sandboxPipeline: false,
-    PipelineBranch: deploymentBranch,
+    pipelineConfig: appConfig.pipeline,
     env: { account: appConfig.pipeline.account, region: appConfig.pipeline.region },
   });
 } else {
@@ -30,7 +30,7 @@ if (deploymentBranch === 'main') {
     stackName: `${appConfig.name}-sandbox-pipeline-stack-${deploymentBranch}`,
     appConfig: appConfig,
     sandboxPipeline: true,
-    PipelineBranch: deploymentBranch,
+    pipelineConfig: sandboxPipeline,
     env: { account: sandboxPipeline.account, region: sandboxPipeline.region },
   });
 }

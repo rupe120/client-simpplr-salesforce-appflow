@@ -3,12 +3,12 @@ import * as pipelines from 'aws-cdk-lib/pipelines';
 import * as codebuild from 'aws-cdk-lib/aws-codebuild';
 import { Construct } from 'constructs';
 import { PipelineAppStage } from './pipeline-app-stage';
-import { AppConfig } from './config/app-config';
+import { AppConfig, PipelineConfig } from './config/app-config';
 
 export interface  PipelineStackProps extends cdk.StackProps {
   appConfig: AppConfig;
   sandboxPipeline: boolean;
-  PipelineBranch: string;
+  pipelineConfig: PipelineConfig;
 }
 
 export class PipelineStack extends cdk.Stack {
@@ -17,10 +17,10 @@ export class PipelineStack extends cdk.Stack {
 
 
     // Create the pipeline
-    const repoString = `${props.appConfig.pipeline.repositoryOwner}/${props.appConfig.pipeline.repositoryName}`;
-    const codeInput = pipelines.CodePipelineSource.connection(repoString, props.PipelineBranch,
+    const repoString = `${props.pipelineConfig.repositoryOwner}/${props.pipelineConfig.repositoryName}`;
+    const codeInput = pipelines.CodePipelineSource.connection(repoString, props.pipelineConfig.branch,
       {
-        connectionArn: props.appConfig.pipeline.connectionArn,
+        connectionArn: props.pipelineConfig.connectionArn,
       }
     );
     const pipeline = new pipelines.CodePipeline(this, 'Pipeline', {
@@ -34,7 +34,7 @@ export class PipelineStack extends cdk.Stack {
           'npx cdk synth'
         ],
         env: {
-          SIMPPPLR_SALESFORCE_APPFLOW_DEPLOYMENT_BRANCH: props.PipelineBranch,
+          SIMPPPLR_SALESFORCE_APPFLOW_DEPLOYMENT_BRANCH: props.pipelineConfig.branch,
         }
       }),
     });
