@@ -74,7 +74,15 @@ export class MigrationAppFlowStack extends cdk.Stack {
               taskType: 'MAP_ALL',
               sourceFields: [],
               destinationField: '',
-              taskProperties: [],
+              taskProperties: [
+                {
+                  key: 'EXCLUDE_SOURCE_FIELDS',
+                  value: '[]',
+                },
+              ],
+              connectorOperator: {
+                salesforce: 'NO_OP',
+              },
             },
           ],
         });
