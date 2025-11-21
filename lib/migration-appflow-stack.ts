@@ -28,9 +28,6 @@ export class MigrationAppFlowStack extends cdk.Stack {
     const stackName = `${appConfig.name}-migration-appflow-${environment}`;
 
 
-    const salesforceConnectorSecret = secretsmanager.Secret.fromSecretCompleteArn(this, 'SalesforceConnectorSecret', envConfig.salesforce.connectionArn);
-    salesforceConnectorSecret.grantRead(new iam.ServicePrincipal('appflow.amazonaws.com'));
-    
     // Create AppFlow connection profile for Salesforce
     const connectionProfile = new appflow.CfnConnectorProfile(this, 'SalesforceConnectionProfile', {
       connectorProfileName: `${appConfig.name}-salesforce-connection-profile-${environment}`,
@@ -50,6 +47,7 @@ export class MigrationAppFlowStack extends cdk.Stack {
         }
       },
     });
+
 
     // Create flows for each customer
     for (const customer of appConfig.customers) {

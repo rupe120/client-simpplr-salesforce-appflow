@@ -1,5 +1,7 @@
 import * as cdk from 'aws-cdk-lib';
 import * as ec2 from 'aws-cdk-lib/aws-ec2';
+import * as secretsmanager from 'aws-cdk-lib/aws-secretsmanager';
+import * as iam from 'aws-cdk-lib/aws-iam';
 import { Construct } from 'constructs';
 import { AppConfig, EnvironmentConfig } from './config/app-config';
 import * as ecs from 'aws-cdk-lib/aws-ecs';
@@ -23,6 +25,11 @@ export class ApplicationCoreStack extends cdk.Stack {
 
     // Store VPC information for export
     this.vpc = vpc;
+
+
+    const salesforceConnectorSecret = secretsmanager.Secret.fromSecretCompleteArn(this, 'SalesforceConnectorSecret', envConfig.salesforce.connectionArn);
+    salesforceConnectorSecret.grantRead(new iam.ServicePrincipal('appflow.amazonaws.com'));
+
 
     // Output VPC information for reference
     new cdk.CfnOutput(this, 'VpcId', {
