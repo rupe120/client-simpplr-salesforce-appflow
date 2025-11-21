@@ -1,6 +1,7 @@
 import * as cdk from 'aws-cdk-lib';
 import * as appflow from 'aws-cdk-lib/aws-appflow';
 import * as iam from 'aws-cdk-lib/aws-iam';
+import * as secretsmanager from 'aws-cdk-lib/aws-secretsmanager';
 import { Construct } from 'constructs';
 import { AppConfig, EnvironmentConfig } from './config/app-config';
 import { MigrationStorageStack } from './migration-storage-stack';
@@ -26,6 +27,10 @@ export class MigrationAppFlowStack extends cdk.Stack {
     const environment = envConfig.name;
     const stackName = `${appConfig.name}-migration-appflow-${environment}`;
 
+
+    const salesforceConnectorSecret = secretsmanager.Secret.fromSecretCompleteArn(this, 'SalesforceConnectorSecret', envConfig.salesforce.connectionArn);
+    salesforceConnectorSecret.grantRead(new iam.ServicePrincipal('appflow.amazonaws.com'));
+    
     // Create AppFlow connection profile for Salesforce
     const connectionProfile = new appflow.CfnConnectorProfile(this, 'SalesforceConnectionProfile', {
       connectorProfileName: `${appConfig.name}-salesforce-connection-profile-${environment}`,
@@ -62,6 +67,7 @@ export class MigrationAppFlowStack extends cdk.Stack {
           triggerConfig: {
             triggerType: 'OnDemand', // Triggered by Step Functions
           },
+          
           sourceFlowConfig: {
             connectorType: 'Salesforce',
             sourceConnectorProperties: {
