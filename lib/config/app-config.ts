@@ -3,12 +3,12 @@ export const appConfig: AppConfig = {
   version: '0.1.0',
 
   pipeline: {
-    account: '971764590821',
+    account: '533101977259',
     region: 'us-east-1',
-    repositoryName: 'client-simpplr-salesforce-appflow',
-    repositoryOwner: 'rupe120',
+    repositoryName: 'simpplr',
+    repositoryOwner: 'muhammad-atout-protagona',
     branch: 'main',
-    connectionArn: 'arn:aws:codeconnections:us-east-1:971764590821:connection/28f626ba-e037-48b7-b835-23050945dbd7',
+    connectionArn: 'arn:aws:codeconnections:us-east-1:533101977259:connection/65240ae6-4785-4000-9a83-89acc30b3fc0',
   },
 
   sandboxPipelines: [
@@ -247,24 +247,24 @@ export const appConfig: AppConfig = {
   environments: [
     {
       name: 'dev',
-      account: '971764590821',
+      account: '533101977259',
       region: 'us-east-1',
       requiresApproval: false,
 
       salesforce: {
         // Salesforce connection configuration
         // This will be used to create AppFlow connections
-        connectionArn: 'arn:aws:appflow:us-east-1:754178572197:connectorprofile/salesforce-demo',
+        connectionArn: 'arn:aws:appflow:us-east-1:533101977259:connectorprofile/salesforce-connection-2',
         instanceUrl: 'https://simpplr.my.salesforce.com', 
       },
 
       // Reference to existing VPC that contains the RDS instances
-      vpcId: 'vpc-09f209142675bf3c6', // Update with actual VPC ID where RDS instances are located
+      vpcId: 'vpc-0945a7bbfa144b582', // Update with actual VPC ID where RDS instances are located
       rdsConfig: {
-        host: 'simpplrtemptargetstack-postgresdatabase0a8a7373-wrgeltpyzupe.cd3pf5p1k9pl.us-east-1.rds.amazonaws.com',
+        host: 'simpplrtemptargetstack-postgresdatabase0a8a7373-3j7r0morhnlq.cmhxw6zfvtzj.us-east-1.rds.amazonaws.com',
         port: 5432,
-        database: 'customer_001_db',
-        secretArn: 'arn:aws:secretsmanager:us-east-1:971764590821:secret:PostgresDatabaseSecret8058A-dOuMy2PmAopi-5SD6Ws',
+        database: 'simpplrdb',
+        secretArn: 'arn:aws:secretsmanager:us-east-1:533101977259:secret:PostgresDatabaseSecret8058A-wDFf66VGvVsQ-t4BSD6',
         engine: 'postgres',
       },
     }
