@@ -11,15 +11,32 @@ export const appConfig: AppConfig = {
     connectionArn: 'arn:aws:codeconnections:us-east-1:533101977259:connection/65240ae6-4785-4000-9a83-89acc30b3fc0',
   },
 
-  sandboxPipelines: [
+  sandboxEnvironments: [
     {
-      account: '971764590821',
-      region: 'us-east-1',
-      repositoryName: 'client-simpplr-salesforce-appflow',
-      repositoryOwner: 'rupe120',
-      branch: 'sandbox-jrusso',
-      connectionArn: 'arn:aws:codeconnections:us-east-1:971764590821:connection/28f626ba-e037-48b7-b835-23050945dbd7'
-    },
+      // JRusso sandbox environment
+      pipelineConfig: {
+        account: '971764590821',
+        region: 'us-east-1',
+        repositoryName: 'client-simpplr-salesforce-appflow',
+        repositoryOwner: 'rupe120',
+        branch: 'sandbox-jrusso',
+        connectionArn: 'arn:aws:codeconnections:us-east-1:971764590821:connection/28f626ba-e037-48b7-b835-23050945dbd7'
+      },
+      environmentConfig: {
+        name: 'sandbox-jrusso',
+        account: '971764590821',
+        region: 'us-east-1',
+        requiresApproval: false,
+        salesforce: {
+          connectionArn: 'arn:aws:secretsmanager:us-east-1:971764590821:secret:appflow!971764590821-sf-temp-1763741024664-KGA0wB',
+          instanceUrl: 'https://protagona-sf-demo.my.salesforce.com',
+        },
+        vpcId: 'vpc-09f209142675bf3c6',
+        rdsConfig: {
+          secretArn: 'arn:aws:secretsmanager:us-east-1:971764590821:secret:PostgresDatabaseSecret8058A-dOuMy2PmAopi-5SD6Ws',
+        },
+      },
+    }
   ],
   
   appFlowConfig: {
@@ -258,17 +275,13 @@ export const appConfig: AppConfig = {
         // Salesforce connection configuration
         // This will be used to create AppFlow connections
         connectionArn: 'arn:aws:appflow:us-east-1:533101977259:connectorprofile/salesforce-connection-2',
-        instanceUrl: 'https://simpplr.my.salesforce.com', 
+        instanceUrl: 'https://protagona-sf-demo.my.salesforce.com', 
       },
 
       // Reference to existing VPC that contains the RDS instances
       vpcId: 'vpc-0945a7bbfa144b582', // Update with actual VPC ID where RDS instances are located
       rdsConfig: {
-        host: 'simpplrtemptargetstack-postgresdatabase0a8a7373-3j7r0morhnlq.cmhxw6zfvtzj.us-east-1.rds.amazonaws.com',
-        port: 5432,
-        database: 'simpplrdb',
         secretArn: 'arn:aws:secretsmanager:us-east-1:533101977259:secret:PostgresDatabaseSecret8058A-wDFf66VGvVsQ-t4BSD6',
-        engine: 'postgres',
       },
     }
   ]
@@ -278,7 +291,7 @@ export class AppConfig {
     public name: string;
     public version: string;
     public pipeline: PipelineConfig;
-    public sandboxPipelines: PipelineConfig[];
+    public sandboxEnvironments: SandboxConfig[];
     public appFlowConfig: AppFlowConfig;
     public customers: CustomerConfig[];
     public environments: EnvironmentConfig[] = [];
@@ -298,6 +311,11 @@ export class PipelineConfig {
     public connectionArn: string;
 }
 
+export class SandboxConfig {
+    public pipelineConfig: PipelineConfig;
+    public environmentConfig: EnvironmentConfig;
+}
+
 export class EnvironmentConfig {
     public name: string;
     public account: string;
@@ -305,7 +323,7 @@ export class EnvironmentConfig {
     public requiresApproval: boolean;
     public salesforce: SalesforceConfig;
     public vpcId: string; // ID of existing VPC that contains RDS instances
-    rdsConfig: RDSConfig;
+    public rdsConfig: RDSConfig;
 }
 
 export interface CustomerConfig {
@@ -315,11 +333,8 @@ export interface CustomerConfig {
 }
 
 export interface RDSConfig {
-    host: string;
-    port: number;
-    database: string;
+    database?: string;
     secretArn: string;
-    engine: 'postgres' | 'mysql' | 'mariadb' | 'oracle' | 'sqlserver';
 }
 
 export interface SalesforceObjectConfig {
