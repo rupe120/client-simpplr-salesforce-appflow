@@ -86,6 +86,7 @@ export class MigrationMonitoringStack extends cdk.Stack {
           },
         }),
       ],
+      region: this.region,
       width: 12,
       height: 6,
     });
@@ -106,12 +107,19 @@ export class MigrationMonitoringStack extends cdk.Stack {
       );
     }
 
-    const glueWidget = new cloudwatch.GraphWidget({
-      title: 'Glue Job Failures',
-      left: glueMetrics,
-      width: 12,
-      height: 6,
-    });
+    const widgets: cloudwatch.IWidget[] = [stepFunctionsWidget];
+
+    if (glueMetrics.length > 0) {
+      widgets.push(
+        new cloudwatch.GraphWidget({
+          title: 'Glue Job Failures',
+          left: glueMetrics,
+          region: this.region,
+          width: 12,
+          height: 6,
+        })
+      );
+    }
 
     // Glue DPU Utilization
     const dpuMetrics: cloudwatch.Metric[] = [];
@@ -129,15 +137,20 @@ export class MigrationMonitoringStack extends cdk.Stack {
       );
     }
 
-    const dpuWidget = new cloudwatch.GraphWidget({
-      title: 'Glue DPU Utilization',
-      left: dpuMetrics,
-      width: 12,
-      height: 6,
-    });
+    if (dpuMetrics.length > 0) {
+      widgets.push(
+        new cloudwatch.GraphWidget({
+          title: 'Glue DPU Utilization',
+          left: dpuMetrics,
+          region: this.region,
+          width: 12,
+          height: 6,
+        })
+      );
+    }
 
-    // Add widgets to dashboard
-    this.dashboard.addWidgets(stepFunctionsWidget, glueWidget, dpuWidget);
+    // Add widgets to dashboard (only widgets with valid metrics)
+    this.dashboard.addWidgets(...widgets);
 
     // CloudWatch Alarms
     // Step Functions failure alarm
