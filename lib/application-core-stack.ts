@@ -27,10 +27,6 @@ export class ApplicationCoreStack extends cdk.Stack {
     this.vpc = vpc;
 
 
-    const salesforceConnectorSecret = secretsmanager.Secret.fromSecretCompleteArn(this, 'SalesforceConnectorSecret', props.envConfig.salesforce.secretArn);
-    salesforceConnectorSecret.grantRead(new iam.ServicePrincipal('appflow.amazonaws.com'));
-
-
     // Output VPC information for reference
     new cdk.CfnOutput(this, 'VpcId', {
       value: vpc.vpcId,
