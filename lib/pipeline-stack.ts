@@ -40,7 +40,7 @@ export class PipelineStack extends cdk.Stack {
           'npx cdk synth'
         ],
         env: {
-          SIMPPPLR_SALESFORCE_APPFLOW_DEPLOYMENT_BRANCH: pipelineConfig.branch,
+          SIMPPLR_SALESFORCE_APPFLOW_DEPLOYMENT_BRANCH: pipelineConfig.branch,
         }
       }),
     });

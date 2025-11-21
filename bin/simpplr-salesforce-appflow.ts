@@ -5,9 +5,9 @@ import { appConfig } from '../lib/config/app-config';
 
 const app = new cdk.App();
 
-const deploymentBranch = process.env.SIMPPPLR_SALESFORCE_APPFLOW_DEPLOYMENT_BRANCH;
+const deploymentBranch = process.env.SIMPPLR_SALESFORCE_APPFLOW_DEPLOYMENT_BRANCH;
 if (!deploymentBranch) {
-  throw new Error('SIMPPPLR_SALESFORCE_APPFLOW_DEPLOYMENT_BRANCH environment variable is not set');
+  throw new Error('SIMPPLR_SALESFORCE_APPFLOW_DEPLOYMENT_BRANCH environment variable is not set');
 }
 
 if (deploymentBranch === 'main') {

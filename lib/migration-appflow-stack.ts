@@ -27,39 +27,6 @@ export class MigrationAppFlowStack extends cdk.Stack {
     const environment = envConfig.name;
     const stackName = `${appConfig.name}-migration-appflow-${environment}`;
 
-    // Determine connector profile name and create if needed
-    let connectorProfileName: string;
-    let connectionProfile: appflow.CfnConnectorProfile | undefined;
-
-    if (envConfig.salesforce.connectorProfileName) {
-      // Use existing connector profile
-      connectorProfileName = envConfig.salesforce.connectorProfileName;
-      console.log(`Using existing AppFlow connector profile: ${connectorProfileName}`);
-    } else {
-      // Create new AppFlow connection profile for Salesforce
-      connectionProfile = new appflow.CfnConnectorProfile(this, 'SalesforceConnectionProfile', {
-        connectorProfileName: `${appConfig.name}-salesforce-connection-profile-${environment}`,
-        connectorType: 'Salesforce',
-        connectionMode: 'Public',
-        connectorProfileConfig: {
-          connectorProfileProperties: {
-            salesforce: {
-              instanceUrl: envConfig.salesforce.instanceUrl,
-              isSandboxEnvironment: false,
-            },
-
-          },
-          connectorProfileCredentials: {
-            salesforce: {
-              clientCredentialsArn: envConfig.salesforce.secretArn,
-            }
-          }
-        },
-      });
-      connectorProfileName = connectionProfile.connectorProfileName!;
-    }
-
-
     // Create flows for each customer
     for (const customer of appConfig.customers) {
       // Get Salesforce objects from customer config or use default migration objects
@@ -86,7 +53,7 @@ export class MigrationAppFlowStack extends cdk.Stack {
                 includeDeletedRecords: false,
               },
             },
-            connectorProfileName: connectorProfileName,
+            connectorProfileName: envConfig.salesforce.connectorProfileName,
           },
           destinationFlowConfigList: [{
             connectorType: 'S3',
@@ -94,13 +61,9 @@ export class MigrationAppFlowStack extends cdk.Stack {
               s3: {
                 bucketName: storageStack.rawDataBucket.bucketName,
                 s3OutputFormatConfig: {
-                  fileType: 'JSON', // Can be changed to Parquet for better performance
-                  prefixConfig: {
-                    prefixType: 'PATH',
-                    prefixFormat: 'DAY',
-                  },
+                  fileType: 'PARQUET', 
                   aggregationConfig: {
-                    aggregationType: 'None',
+                    aggregationType: 'SingleFile',
                   },
                 },
               },
@@ -116,10 +79,6 @@ export class MigrationAppFlowStack extends cdk.Stack {
           ],
         });
 
-        // Add dependency only if we created a new profile
-        if (connectionProfile) {
-          flow.addDependency(connectionProfile);
-        }
         this.flows.set(flowId, flow);
 
         // Grant AppFlow permission to write to S3
@@ -129,11 +88,6 @@ export class MigrationAppFlowStack extends cdk.Stack {
       }
     }
 
-    // Outputs
-    new cdk.CfnOutput(this, 'ConnectionProfileName', {
-      value: connectorProfileName,
-      exportName: `${stackName}-connection-profile`,
-    });
   }
 }
 
